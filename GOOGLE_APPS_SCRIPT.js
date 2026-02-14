@@ -11,27 +11,28 @@
 // 4. Click the "Run" button (▶) with `testSetup` selected in the
 //    function dropdown. Google will ask you to authorize — follow
 //    the prompts and grant access.
-// 5. Click "Deploy" > "New deployment".
-//    - Type: Web app
-//    - Execute as: Me
+// 5. Click "Deploy" > "Manage deployments" > edit existing deployment.
 //    - Who has access: Anyone
-// 6. Click "Deploy". Copy the Web App URL.
-// 7. Add that URL as the GOOGLE_SCRIPT_URL environment variable:
-//    - In .env.local for local development
-//    - In Vercel: Settings > Environment Variables (all environments)
+// 6. Click "Deploy".
 //
 // HOW IT WORKS:
 //   - Every order (preorder or wholesale) goes into a weekly tab
 //   - Tabs are named "Week of Mon DD" (e.g. "Week of Feb 10")
 //   - A new tab is auto-created each Monday
 //   - Online orders from the website have Sales Agent = "Online"
-//   - Your field sales team's orders (Fahiye, Ay, etc.) can be
-//     entered directly into the sheet — same format
+//   - Your field sales team's orders can be entered directly
 //
 // COLUMNS:
 //   Date | Type | Name/Business | Address | Phone | Email |
 //   Contact | Sales Agent | Classic | Blueberry | Walnut |
-//   Total Loaves | Frequency | Status | Notes
+//   Total Loaves | Price/Loaf | Revenue | Frequency | Status | Notes
+//
+// PRICING:
+//   - Price/Loaf is editable per row. Defaults:
+//     Bodega/Cafe/Gym/Restaurant/Office = $30
+//     Preorders = blank (edit manually if needed)
+//   - For distributors, manually set Price/Loaf (e.g. $22.50)
+//   - Revenue auto-calculates: Total Loaves × Price/Loaf
 //
 // ============================================================
 
@@ -50,10 +51,17 @@ var HEADERS = [
   "Blueberry",
   "Walnut",
   "Total Loaves",
+  "Price/Loaf",
+  "Revenue",
   "Frequency",
   "Status",
   "Notes"
 ];
+
+// Column indices (1-based)
+var COL_TOTAL_LOAVES = 12;
+var COL_PRICE = 13;
+var COL_REVENUE = 14;
 
 function doPost(e) {
   try {
@@ -85,10 +93,9 @@ function doPost(e) {
 // ---- Weekly sheet management ----
 
 function getWeekSheetName(date) {
-  // Find the Monday of the given date's week
   var d = new Date(date);
-  var day = d.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-  var diff = day === 0 ? -6 : 1 - day; // If Sunday, go back 6 days
+  var day = d.getDay();
+  var diff = day === 0 ? -6 : 1 - day;
   d.setDate(d.getDate() + diff);
 
   var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -101,7 +108,7 @@ function getOrCreateWeeklySheet(ss) {
   var sheet = ss.getSheetByName(sheetName);
 
   if (!sheet) {
-    sheet = ss.insertSheet(sheetName, 0); // Insert at front (most recent first)
+    sheet = ss.insertSheet(sheetName, 0);
 
     // Write headers
     sheet.appendRow(HEADERS);
@@ -109,11 +116,11 @@ function getOrCreateWeeklySheet(ss) {
     // Style header row
     var headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
     headerRange.setFontWeight("bold");
-    headerRange.setBackground("#1B2A4A"); // navy
-    headerRange.setFontColor("#FEFCF3");  // cream
+    headerRange.setBackground("#1B2A4A");
+    headerRange.setFontColor("#FEFCF3");
     headerRange.setHorizontalAlignment("center");
 
-    // Set column widths for readability
+    // Column widths
     sheet.setColumnWidth(1, 90);   // Date
     sheet.setColumnWidth(2, 80);   // Type
     sheet.setColumnWidth(3, 180);  // Name/Business
@@ -125,10 +132,16 @@ function getOrCreateWeeklySheet(ss) {
     sheet.setColumnWidth(9, 60);   // Classic
     sheet.setColumnWidth(10, 70);  // Blueberry
     sheet.setColumnWidth(11, 60);  // Walnut
-    sheet.setColumnWidth(12, 90);  // Total Loaves
-    sheet.setColumnWidth(13, 90);  // Frequency
-    sheet.setColumnWidth(14, 80);  // Status
-    sheet.setColumnWidth(15, 200); // Notes
+    sheet.setColumnWidth(12, 95);  // Total Loaves
+    sheet.setColumnWidth(13, 85);  // Price/Loaf
+    sheet.setColumnWidth(14, 90);  // Revenue
+    sheet.setColumnWidth(15, 90);  // Frequency
+    sheet.setColumnWidth(16, 80);  // Status
+    sheet.setColumnWidth(17, 200); // Notes
+
+    // Format Price/Loaf and Revenue columns as currency
+    sheet.getRange(2, COL_PRICE, 500).setNumberFormat("$#,##0.00");
+    sheet.getRange(2, COL_REVENUE, 500).setNumberFormat("$#,##0.00");
 
     // Freeze header row
     sheet.setFrozenRows(1);
@@ -149,6 +162,8 @@ function writePreorder(sheet, data) {
   if (data.pickupDate) notes.push("Pickup: " + data.pickupDate);
   if (data.specialInstructions) notes.push(data.specialInstructions);
 
+  var row = sheet.getLastRow() + 1;
+
   sheet.appendRow([
     formatDate(data.submittedAt || new Date()),
     "Preorder",
@@ -156,16 +171,21 @@ function writePreorder(sheet, data) {
     "Pickup",
     data.phone || "",
     data.email || "",
-    "",                          // Contact — same as customer for preorders
-    "Online",                    // Sales Agent
+    "",
+    "Online",
     classic,
     blueberry,
     walnut,
     total,
+    "",                          // Price/Loaf — blank for preorders, edit if needed
+    "",                          // Revenue — formula set below
     "One-time",
-    "New",                       // Status — starts as New
+    "New",
     notes.join(" | ")
   ]);
+
+  // Set Revenue formula: =IF(M{row}="","",L{row}*M{row})
+  setRevenueFormula(sheet, row);
 }
 
 function writeWholesale(sheet, data) {
@@ -178,8 +198,9 @@ function writeWholesale(sheet, data) {
   if (data.specialInstructions) notes.push(data.specialInstructions);
 
   var frequency = data.frequency || "One-time";
-  // Capitalize first letter
-  frequency = frequency.charAt(0).toUpperCase() + frequency.slice(1).replace("-", "-");
+  frequency = frequency.charAt(0).toUpperCase() + frequency.slice(1);
+
+  var row = sheet.getLastRow() + 1;
 
   sheet.appendRow([
     formatDate(data.submittedAt || new Date()),
@@ -188,19 +209,30 @@ function writeWholesale(sheet, data) {
     data.deliveryAddress || "",
     data.phone || "",
     data.email || "",
-    data.contactName || "",      // Contact (Manager at the store)
-    "Online",                    // Sales Agent — website orders
+    data.contactName || "",
+    "Online",
     classic,
     blueberry,
     walnut,
     total,
+    30,                          // Price/Loaf — default $30 for wholesale
+    "",                          // Revenue — formula set below
     frequency,
-    "New",                       // Status — starts as New
+    "New",
     notes.join(" | ")
   ]);
+
+  // Set Revenue formula
+  setRevenueFormula(sheet, row);
 }
 
 // ---- Helpers ----
+
+function setRevenueFormula(sheet, row) {
+  // Revenue = Total Loaves × Price/Loaf (blank if no price set)
+  var formula = '=IF(M' + row + '="","",L' + row + '*M' + row + ')';
+  sheet.getRange(row, COL_REVENUE).setFormula(formula);
+}
 
 function formatDate(dateInput) {
   var d;
@@ -221,14 +253,11 @@ function testSetup() {
   Logger.log("Spreadsheet name: " + ss.getName());
   Logger.log("Spreadsheet ID: " + ss.getId());
 
-  // Create this week's sheet as a test
   var sheet = getOrCreateWeeklySheet(ss);
   Logger.log("Current week sheet: " + sheet.getName());
   Logger.log("Setup verified successfully");
 }
 
-// Manual helper: create a sheet for any week (run from script editor)
-// Usage: createSheetForDate(new Date("2026-02-17"))
 function createSheetForDate(date) {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var sheetName = getWeekSheetName(date);
@@ -237,7 +266,6 @@ function createSheetForDate(date) {
     Logger.log("Sheet already exists: " + sheetName);
     return;
   }
-  // Temporarily override to create the sheet
   var sheet = ss.insertSheet(sheetName, 0);
   sheet.appendRow(HEADERS);
   var headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
@@ -245,6 +273,8 @@ function createSheetForDate(date) {
   headerRange.setBackground("#1B2A4A");
   headerRange.setFontColor("#FEFCF3");
   headerRange.setHorizontalAlignment("center");
+  sheet.getRange(2, COL_PRICE, 500).setNumberFormat("$#,##0.00");
+  sheet.getRange(2, COL_REVENUE, 500).setNumberFormat("$#,##0.00");
   sheet.setFrozenRows(1);
   Logger.log("Created sheet: " + sheetName);
 }
