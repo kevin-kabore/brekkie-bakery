@@ -9,7 +9,7 @@ import { AddressInput, formatAddress } from "@/components/ui/AddressInput";
 import { BUSINESS_TYPES, FREQUENCIES } from "@/lib/constants";
 import type { AddressData, DeliveryFormData, WholesaleFormData } from "@/types";
 
-export type TabType = "delivery" | "wholesale";
+export type TabType = "preorder" | "wholesale";
 type SubmitState = "idle" | "submitting" | "success" | "error";
 
 function getTomorrowDate(): string {
@@ -84,7 +84,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
     e.preventDefault();
     setFormError("");
 
-    const data = activeTab === "delivery" ? deliveryData : wholesaleData;
+    const data = activeTab === "preorder" ? deliveryData : wholesaleData;
     if (
       data.classicQty === 0 &&
       data.blueberryQty === 0 &&
@@ -98,9 +98,9 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
 
     try {
       // Flatten address to a single string for the API
-      const payload = activeTab === "delivery"
+      const payload = activeTab === "preorder"
         ? {
-            formType: "delivery",
+            formType: "preorder",
             ...deliveryData,
             deliveryAddress: formatAddress(deliveryData.address),
           }
@@ -123,7 +123,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
       setSubmitState("success");
       setTimeout(() => {
         setSubmitState("idle");
-        if (activeTab === "delivery") {
+        if (activeTab === "preorder") {
           setDeliveryData(initialDelivery);
         } else {
           setWholesaleData(initialWholesale);
@@ -178,16 +178,16 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
         <button
           type="button"
           onClick={() => {
-            setActiveTab("delivery");
+            setActiveTab("preorder");
             setFormError("");
           }}
           className={
-            activeTab === "delivery"
+            activeTab === "preorder"
               ? "bg-navy text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
               : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20 cursor-pointer"
           }
         >
-          Delivery
+          Preorder
         </button>
         <button
           type="button"
@@ -207,7 +207,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
 
       <div className="bg-white rounded-2xl rounded-tl-none shadow-lg p-6 md:p-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {activeTab === "delivery" ? (
+          {activeTab === "preorder" ? (
             <>
               <Input
                 label="Name"

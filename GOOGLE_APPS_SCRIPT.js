@@ -69,8 +69,8 @@ function doPost(e) {
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = getOrCreateWeeklySheet(ss);
 
-    if (data.formType === "delivery") {
-      writeDelivery(sheet, data);
+    if (data.formType === "preorder") {
+      writePreorder(sheet, data);
     } else if (data.formType === "wholesale") {
       writeWholesale(sheet, data);
     } else {
@@ -152,7 +152,7 @@ function getOrCreateWeeklySheet(ss) {
 
 // ---- Write order rows ----
 
-function writeDelivery(sheet, data) {
+function writePreorder(sheet, data) {
   var classic = data.classicQty || 0;
   var blueberry = data.blueberryQty || 0;
   var walnut = data.walnutQty || 0;
@@ -166,7 +166,7 @@ function writeDelivery(sheet, data) {
 
   sheet.appendRow([
     formatDate(data.submittedAt || new Date()),
-    "Delivery",
+    "Preorder",
     data.name || "",
     data.deliveryAddress || "",
     data.phone || "",

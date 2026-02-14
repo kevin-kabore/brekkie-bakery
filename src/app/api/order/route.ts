@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate formType
-    if (!body.formType || !["delivery", "wholesale"].includes(body.formType)) {
+    if (!body.formType || !["preorder", "wholesale"].includes(body.formType)) {
       return NextResponse.json({ error: "Invalid form type" }, { status: 400 });
     }
 
