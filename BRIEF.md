@@ -86,7 +86,7 @@ All loaded via `next/font/google`.
 - **Styling:** Tailwind CSS v4
 - **Language:** TypeScript
 - **Animations:** CSS-only (IntersectionObserver for scroll reveals)
-- **Form backend:** Google Sheets via Apps Script (proxied through Next.js API route)
+- **Form backend:** Google Sheets via Apps Script (proxied through Next.js API route). Orders go into weekly tabs ("Week of Mon DD") in a specific spreadsheet.
 - **Hosting:** Vercel
 - **Repo:** github.com/kevin-kabore/brekkie-bakery
 
@@ -99,7 +99,7 @@ All loaded via `next/font/google`.
 | GitHub | github.com/kevin-kabore/brekkie-bakery |
 | Vercel | kevin-optoinvestcs-projects |
 | Domain | brekkiebakery.com (registered at Squarespace, DNS pointed to Vercel) |
-| Google Sheets | User creates sheet + deploys Apps Script |
+| Google Sheets | Spreadsheet ID: `17vLCTk0o8A5Bn_csZFjJH3NBYYBKooOXFOV3KtmGJ9c`. Weekly tabs auto-created by Apps Script. |
 
 ---
 

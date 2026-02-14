@@ -487,10 +487,21 @@ Report the Vercel deployment URL and any remaining issues.
 
 ## Post-Build: Google Apps Script Setup
 
-After the site is deployed, follow the instructions in `GOOGLE_APPS_SCRIPT.js` to:
-1. Create the Google Sheet
-2. Deploy the Apps Script
-3. Copy the Web App URL
-4. Update the `GOOGLE_SCRIPT_URL` env var on Vercel: `vercel env rm GOOGLE_SCRIPT_URL` then `vercel env add GOOGLE_SCRIPT_URL`
-5. Redeploy: `vercel --prod`
-6. Test both forms end-to-end
+After the site is deployed, follow the instructions in `GOOGLE_APPS_SCRIPT.js` to connect order forms to the existing Brekkie Orders spreadsheet:
+
+1. Open the spreadsheet: https://docs.google.com/spreadsheets/d/17vLCTk0o8A5Bn_csZFjJH3NBYYBKooOXFOV3KtmGJ9c/edit
+2. Go to Extensions > Apps Script
+3. Paste the contents of `GOOGLE_APPS_SCRIPT.js`
+4. Run `testSetup` to authorize and verify
+5. Deploy as a Web App (Execute as: Me, Who has access: Anyone)
+6. Copy the Web App URL
+7. Update the `GOOGLE_SCRIPT_URL` env var on Vercel: `vercel env rm GOOGLE_SCRIPT_URL` then `vercel env add GOOGLE_SCRIPT_URL`
+8. Redeploy: `vercel --prod`
+9. Test both forms end-to-end
+
+**How weekly tabs work:**
+- Orders are written to a tab named "Week of Mon DD" (e.g. "Week of Feb 10")
+- A new tab is auto-created each Monday
+- Online orders have Sales Agent = "Online"
+- Field sales team orders (Fahiye, Ay, etc.) can be entered directly into the same sheet
+- Columns: Date, Type, Name/Business, Address, Phone, Email, Contact, Sales Agent, Classic, Blueberry, Walnut, Total Loaves, Frequency, Status, Notes
