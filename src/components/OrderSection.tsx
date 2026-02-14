@@ -23,8 +23,7 @@ export function OrderSection() {
           Place Your Order
         </h2>
         <p className="text-center text-navy/60 mb-12">
-          Preorder for personal pickup or inquire about wholesale for your
-          business.
+          Order for delivery or inquire about wholesale for your business.
         </p>
         <OrderForm defaultTab={defaultTab} />
       </div>

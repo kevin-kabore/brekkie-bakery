@@ -69,8 +69,8 @@ function doPost(e) {
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = getOrCreateWeeklySheet(ss);
 
-    if (data.formType === "preorder") {
-      writePreorder(sheet, data);
+    if (data.formType === "delivery") {
+      writeDelivery(sheet, data);
     } else if (data.formType === "wholesale") {
       writeWholesale(sheet, data);
     } else {
@@ -152,23 +152,23 @@ function getOrCreateWeeklySheet(ss) {
 
 // ---- Write order rows ----
 
-function writePreorder(sheet, data) {
+function writeDelivery(sheet, data) {
   var classic = data.classicQty || 0;
   var blueberry = data.blueberryQty || 0;
   var walnut = data.walnutQty || 0;
   var total = classic + blueberry + walnut;
 
   var notes = [];
-  if (data.pickupDate) notes.push("Pickup: " + data.pickupDate);
+  if (data.deliveryDate) notes.push("Delivery: " + data.deliveryDate);
   if (data.specialInstructions) notes.push(data.specialInstructions);
 
   var row = sheet.getLastRow() + 1;
 
   sheet.appendRow([
     formatDate(data.submittedAt || new Date()),
-    "Preorder",
+    "Delivery",
     data.name || "",
-    "Pickup",
+    data.deliveryAddress || "",
     data.phone || "",
     data.email || "",
     "",
@@ -177,14 +177,13 @@ function writePreorder(sheet, data) {
     blueberry,
     walnut,
     total,
-    "",                          // Price/Loaf — blank for preorders, edit if needed
+    "",                          // Price/Loaf — blank for delivery, edit if needed
     "",                          // Revenue — formula set below
     "One-time",
     "New",
     notes.join(" | ")
   ]);
 
-  // Set Revenue formula: =IF(M{row}="","",L{row}*M{row})
   setRevenueFormula(sheet, row);
 }
 

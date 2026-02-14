@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
+import { AddressInput, formatAddress } from "@/components/ui/AddressInput";
 import { BUSINESS_TYPES, FREQUENCIES } from "@/lib/constants";
-import type { PreorderFormData, WholesaleFormData } from "@/types";
+import type { AddressData, DeliveryFormData, WholesaleFormData } from "@/types";
 
-export type TabType = "preorder" | "wholesale";
+export type TabType = "delivery" | "wholesale";
 type SubmitState = "idle" | "submitting" | "success" | "error";
 
 function getTomorrowDate(): string {
@@ -17,14 +18,23 @@ function getTomorrowDate(): string {
   return tomorrow.toISOString().split("T")[0];
 }
 
-const initialPreorder: PreorderFormData = {
+const emptyAddress: AddressData = {
+  street: "",
+  apt: "",
+  city: "",
+  state: "",
+  zip: "",
+};
+
+const initialDelivery: DeliveryFormData = {
   name: "",
   email: "",
   phone: "",
   classicQty: 0,
   blueberryQty: 0,
   walnutQty: 0,
-  pickupDate: "",
+  deliveryDate: "",
+  address: { ...emptyAddress },
   specialInstructions: "",
 };
 
@@ -37,7 +47,7 @@ const initialWholesale: WholesaleFormData = {
   classicQty: 0,
   blueberryQty: 0,
   walnutQty: 0,
-  deliveryAddress: "",
+  address: { ...emptyAddress },
   frequency: "one-time",
   specialInstructions: "",
 };
@@ -49,18 +59,18 @@ const businessTypeOptions = BUSINESS_TYPES.map((type) => ({
 
 export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }) {
   const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
-  const [preorderData, setPreorderData] =
-    useState<PreorderFormData>(initialPreorder);
+  const [deliveryData, setDeliveryData] =
+    useState<DeliveryFormData>(initialDelivery);
   const [wholesaleData, setWholesaleData] =
     useState<WholesaleFormData>(initialWholesale);
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [formError, setFormError] = useState("");
 
-  function updatePreorder<K extends keyof PreorderFormData>(
+  function updateDelivery<K extends keyof DeliveryFormData>(
     field: K,
-    value: PreorderFormData[K]
+    value: DeliveryFormData[K]
   ) {
-    setPreorderData((prev) => ({ ...prev, [field]: value }));
+    setDeliveryData((prev) => ({ ...prev, [field]: value }));
   }
 
   function updateWholesale<K extends keyof WholesaleFormData>(
@@ -74,7 +84,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
     e.preventDefault();
     setFormError("");
 
-    const data = activeTab === "preorder" ? preorderData : wholesaleData;
+    const data = activeTab === "delivery" ? deliveryData : wholesaleData;
     if (
       data.classicQty === 0 &&
       data.blueberryQty === 0 &&
@@ -87,10 +97,23 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
     setSubmitState("submitting");
 
     try {
+      // Flatten address to a single string for the API
+      const payload = activeTab === "delivery"
+        ? {
+            formType: "delivery",
+            ...deliveryData,
+            deliveryAddress: formatAddress(deliveryData.address),
+          }
+        : {
+            formType: "wholesale",
+            ...wholesaleData,
+            deliveryAddress: formatAddress(wholesaleData.address),
+          };
+
       const response = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ formType: activeTab, ...data }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -100,8 +123,8 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
       setSubmitState("success");
       setTimeout(() => {
         setSubmitState("idle");
-        if (activeTab === "preorder") {
-          setPreorderData(initialPreorder);
+        if (activeTab === "delivery") {
+          setDeliveryData(initialDelivery);
         } else {
           setWholesaleData(initialWholesale);
         }
@@ -155,16 +178,16 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
         <button
           type="button"
           onClick={() => {
-            setActiveTab("preorder");
+            setActiveTab("delivery");
             setFormError("");
           }}
           className={
-            activeTab === "preorder"
+            activeTab === "delivery"
               ? "bg-navy text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
               : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20 cursor-pointer"
           }
         >
-          Preorder
+          Delivery
         </button>
         <button
           type="button"
@@ -184,28 +207,37 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
 
       <div className="bg-white rounded-2xl rounded-tl-none shadow-lg p-6 md:p-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {activeTab === "preorder" ? (
+          {activeTab === "delivery" ? (
             <>
               <Input
                 label="Name"
                 type="text"
                 required
-                value={preorderData.name}
-                onChange={(e) => updatePreorder("name", e.target.value)}
+                autoComplete="name"
+                value={deliveryData.name}
+                onChange={(e) => updateDelivery("name", e.target.value)}
               />
               <Input
                 label="Email"
                 type="email"
                 required
-                value={preorderData.email}
-                onChange={(e) => updatePreorder("email", e.target.value)}
+                autoComplete="email"
+                value={deliveryData.email}
+                onChange={(e) => updateDelivery("email", e.target.value)}
               />
               <Input
                 label="Phone"
                 type="tel"
                 required
-                value={preorderData.phone}
-                onChange={(e) => updatePreorder("phone", e.target.value)}
+                autoComplete="tel"
+                value={deliveryData.phone}
+                onChange={(e) => updateDelivery("phone", e.target.value)}
+              />
+
+              <AddressInput
+                value={deliveryData.address}
+                onChange={(addr) => updateDelivery("address", addr)}
+                prefix="shipping "
               />
 
               <fieldset>
@@ -218,9 +250,9 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                     type="number"
                     min={0}
                     max={20}
-                    value={preorderData.classicQty}
+                    value={deliveryData.classicQty}
                     onChange={(e) =>
-                      updatePreorder("classicQty", Number(e.target.value))
+                      updateDelivery("classicQty", Number(e.target.value))
                     }
                   />
                   <Input
@@ -228,9 +260,9 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                     type="number"
                     min={0}
                     max={20}
-                    value={preorderData.blueberryQty}
+                    value={deliveryData.blueberryQty}
                     onChange={(e) =>
-                      updatePreorder("blueberryQty", Number(e.target.value))
+                      updateDelivery("blueberryQty", Number(e.target.value))
                     }
                   />
                   <Input
@@ -238,28 +270,28 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                     type="number"
                     min={0}
                     max={20}
-                    value={preorderData.walnutQty}
+                    value={deliveryData.walnutQty}
                     onChange={(e) =>
-                      updatePreorder("walnutQty", Number(e.target.value))
+                      updateDelivery("walnutQty", Number(e.target.value))
                     }
                   />
                 </div>
               </fieldset>
 
               <Input
-                label="Preferred Pickup Date"
+                label="Preferred Delivery Date"
                 type="date"
                 required
                 min={getTomorrowDate()}
-                value={preorderData.pickupDate}
-                onChange={(e) => updatePreorder("pickupDate", e.target.value)}
+                value={deliveryData.deliveryDate}
+                onChange={(e) => updateDelivery("deliveryDate", e.target.value)}
               />
               <Textarea
                 label="Special Instructions"
-                placeholder="Any dietary notes, delivery preferences, etc."
-                value={preorderData.specialInstructions}
+                placeholder="Buzzer code, leave at door, dietary notes, etc."
+                value={deliveryData.specialInstructions}
                 onChange={(e) =>
-                  updatePreorder("specialInstructions", e.target.value)
+                  updateDelivery("specialInstructions", e.target.value)
                 }
               />
             </>
@@ -269,6 +301,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                 label="Business Name"
                 type="text"
                 required
+                autoComplete="organization"
                 value={wholesaleData.businessName}
                 onChange={(e) =>
                   updateWholesale("businessName", e.target.value)
@@ -278,6 +311,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                 label="Contact Name"
                 type="text"
                 required
+                autoComplete="name"
                 value={wholesaleData.contactName}
                 onChange={(e) =>
                   updateWholesale("contactName", e.target.value)
@@ -287,6 +321,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                 label="Email"
                 type="email"
                 required
+                autoComplete="email"
                 value={wholesaleData.email}
                 onChange={(e) => updateWholesale("email", e.target.value)}
               />
@@ -294,6 +329,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                 label="Phone"
                 type="tel"
                 required
+                autoComplete="tel"
                 value={wholesaleData.phone}
                 onChange={(e) => updateWholesale("phone", e.target.value)}
               />
@@ -305,6 +341,12 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                 onChange={(e) =>
                   updateWholesale("businessType", e.target.value)
                 }
+              />
+
+              <AddressInput
+                value={wholesaleData.address}
+                onChange={(addr) => updateWholesale("address", addr)}
+                prefix="billing "
               />
 
               <fieldset>
@@ -345,14 +387,6 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
                 </div>
               </fieldset>
 
-              <Textarea
-                label="Delivery Address"
-                required
-                value={wholesaleData.deliveryAddress}
-                onChange={(e) =>
-                  updateWholesale("deliveryAddress", e.target.value)
-                }
-              />
               <Select
                 label="Order Frequency"
                 required
