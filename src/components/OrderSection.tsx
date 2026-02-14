@@ -17,7 +17,7 @@ export function OrderSection() {
   }, []);
 
   return (
-    <section id="order" className="py-20 px-6 bg-cream-blue">
+    <section id="order" className="py-20 px-6 bg-cream">
       <div className="max-w-6xl mx-auto">
         <h2 className="font-display text-4xl md:text-5xl text-center text-navy mb-4">
           Place Your Order

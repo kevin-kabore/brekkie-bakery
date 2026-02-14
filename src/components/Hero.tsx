@@ -1,10 +1,29 @@
-import { StripePattern } from "@/components/ui/StripePattern";
-
 export function Hero() {
   return (
     <section className="min-h-screen relative overflow-hidden flex items-center justify-center bg-cream">
-      {/* Background stripes */}
-      <StripePattern color="#F0C75E" opacity={0.05} />
+      {/* Left edge stripe cluster — mirrors label design */}
+      <div className="absolute left-0 top-0 bottom-0 flex gap-[6px] pl-6 md:pl-12 opacity-[0.08]">
+        <div className="w-[5px] bg-[#3B4D7A]" />
+        <div className="w-[5px] bg-[#3B4D7A]" />
+        <div className="w-[3px] bg-[#3B4D7A]" />
+        <div className="w-[5px] bg-[#3B4D7A]" />
+        <div className="w-[5px] bg-[#3B4D7A]" />
+        <div className="w-[3px] bg-[#F0C75E]" />
+        <div className="w-[5px] bg-[#F0C75E]" />
+        <div className="w-[5px] bg-[#F0C75E]" />
+      </div>
+
+      {/* Right edge stripe cluster */}
+      <div className="absolute right-0 top-0 bottom-0 flex gap-[6px] pr-6 md:pr-12 opacity-[0.08]">
+        <div className="w-[5px] bg-[#F0C75E]" />
+        <div className="w-[5px] bg-[#F0C75E]" />
+        <div className="w-[3px] bg-[#F0C75E]" />
+        <div className="w-[5px] bg-[#3B4D7A]" />
+        <div className="w-[5px] bg-[#3B4D7A]" />
+        <div className="w-[3px] bg-[#3B4D7A]" />
+        <div className="w-[5px] bg-[#3B4D7A]" />
+        <div className="w-[5px] bg-[#3B4D7A]" />
+      </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center text-center px-6">

@@ -160,7 +160,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
           }}
           className={
             activeTab === "preorder"
-              ? "bg-blueberry text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
+              ? "bg-navy text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
               : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20 cursor-pointer"
           }
         >
@@ -174,7 +174,7 @@ export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }
           }}
           className={
             activeTab === "wholesale"
-              ? "bg-blueberry text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
+              ? "bg-navy text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
               : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20 cursor-pointer"
           }
         >

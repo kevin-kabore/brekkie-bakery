@@ -6,7 +6,7 @@ export function OurStory() {
   const { ref, isInView } = useInView();
 
   return (
-    <section id="story" className="py-20 px-6 bg-cream">
+    <section id="story" className="py-20 px-6 bg-white">
       <div
         ref={ref}
         className={`max-w-2xl mx-auto text-center transition-all duration-700 ${
