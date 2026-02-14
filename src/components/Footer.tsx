@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="bg-navy text-cream py-16">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Brand */}
           <div>
             <p className="font-display text-2xl">BREKKIE</p>
@@ -21,25 +21,6 @@ export function Footer() {
               {CONTACT.email}
             </a>
             <p className="text-cream/80 mt-2">{CONTACT.address}</p>
-          </div>
-
-          {/* Social */}
-          <div>
-            <h3 className="font-semibold mb-4">Follow Us</h3>
-            <div className="flex flex-col gap-2">
-              <a
-                href="#"
-                className="text-cream/80 hover:text-coral transition-colors duration-200"
-              >
-                Instagram
-              </a>
-              <a
-                href="#"
-                className="text-cream/80 hover:text-coral transition-colors duration-200"
-              >
-                TikTok
-              </a>
-            </div>
           </div>
         </div>
 

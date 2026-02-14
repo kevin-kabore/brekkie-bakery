@@ -33,7 +33,11 @@ export function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-navy/40">
+      <a
+        href="#products"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-navy/40 hover:text-navy/70 transition-colors duration-200 cursor-pointer"
+        aria-label="Scroll to products"
+      >
         <svg
           width="24"
           height="24"
@@ -46,7 +50,7 @@ export function Hero() {
         >
           <polyline points="6 9 12 15 18 9" />
         </svg>
-      </div>
+      </a>
     </section>
   );
 }

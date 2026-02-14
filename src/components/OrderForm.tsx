@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { BUSINESS_TYPES, FREQUENCIES } from "@/lib/constants";
 import type { PreorderFormData, WholesaleFormData } from "@/types";
 
-type TabType = "preorder" | "wholesale";
+export type TabType = "preorder" | "wholesale";
 type SubmitState = "idle" | "submitting" | "success" | "error";
 
 function getTomorrowDate(): string {
@@ -47,8 +47,8 @@ const businessTypeOptions = BUSINESS_TYPES.map((type) => ({
   label: type,
 }));
 
-export function OrderForm() {
-  const [activeTab, setActiveTab] = useState<TabType>("preorder");
+export function OrderForm({ defaultTab = "wholesale" }: { defaultTab?: TabType }) {
+  const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
   const [preorderData, setPreorderData] =
     useState<PreorderFormData>(initialPreorder);
   const [wholesaleData, setWholesaleData] =
@@ -160,8 +160,8 @@ export function OrderForm() {
           }}
           className={
             activeTab === "preorder"
-              ? "bg-navy text-cream rounded-t-lg px-6 py-3 font-semibold"
-              : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20"
+              ? "bg-blueberry text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
+              : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20 cursor-pointer"
           }
         >
           Preorder
@@ -174,8 +174,8 @@ export function OrderForm() {
           }}
           className={
             activeTab === "wholesale"
-              ? "bg-navy text-cream rounded-t-lg px-6 py-3 font-semibold"
-              : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20"
+              ? "bg-blueberry text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
+              : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20 cursor-pointer"
           }
         >
           Wholesale

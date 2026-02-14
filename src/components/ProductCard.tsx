@@ -22,7 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="p-6">
         <h3 className="font-display text-xl text-navy">{product.name}</h3>
-        <span className="inline-block bg-navy text-cream text-xs font-bold px-3 py-1 rounded-full mt-2">
+        <span className="inline-block bg-blueberry text-cream text-xs font-bold px-3 py-1 rounded-full mt-2">
           12g Protein
         </span>
         <p className="text-navy/60 text-sm mt-2">

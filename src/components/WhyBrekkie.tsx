@@ -52,7 +52,7 @@ function FeatureBlock({
 
 export function WhyBrekkie() {
   return (
-    <section id="why" className="py-20 px-6">
+    <section id="why" className="py-20 px-6 bg-cream-blue">
       <div className="max-w-6xl mx-auto">
         <h2 className="font-display text-4xl md:text-5xl text-center text-navy mb-16">
           Why Brekkie?
