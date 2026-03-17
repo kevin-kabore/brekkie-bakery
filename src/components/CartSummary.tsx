@@ -17,11 +17,11 @@ export function CartSummary({ hidePrices = false, maxQty = 20 }: CartSummaryProp
 
   if (cartProducts.length === 0) {
     return (
-      <div className="rounded-xl border border-navy/10 bg-cream/50 p-6 text-center">
-        <p className="text-navy/50 mb-3">Your cart is empty</p>
+      <div className="rounded-xl border border-stone bg-cream/50 p-6 text-center">
+        <p className="text-espresso/50 mb-3">Your cart is empty</p>
         <a
           href="#products"
-          className="text-coral font-semibold hover:underline text-sm"
+          className="text-crust font-semibold hover:underline text-sm"
         >
           Browse Flavors
         </a>
@@ -32,8 +32,8 @@ export function CartSummary({ hidePrices = false, maxQty = 20 }: CartSummaryProp
   const label = totalQuantity === 1 ? "loaf" : "loaves";
 
   return (
-    <div className="rounded-xl border border-navy/10 bg-cream/50 p-4">
-      <h3 className="font-display text-lg text-navy mb-3">Your Order</h3>
+    <div className="rounded-xl border border-stone bg-cream/50 p-4">
+      <h3 className="font-display text-lg text-espresso mb-3">Your Order</h3>
       <div className="flex flex-col gap-3">
         {cartProducts.map((product) => {
           const qty = items[product.id];
@@ -43,7 +43,7 @@ export function CartSummary({ hidePrices = false, maxQty = 20 }: CartSummaryProp
               key={product.id}
               className="flex items-center justify-between gap-3"
             >
-              <span className="text-sm text-navy flex-1 truncate">
+              <span className="text-sm text-espresso flex-1 truncate">
                 {product.name}
               </span>
               <QuantityStepper
@@ -54,7 +54,7 @@ export function CartSummary({ hidePrices = false, maxQty = 20 }: CartSummaryProp
                 size="sm"
               />
               {!hidePrices && (
-                <span className="text-sm font-semibold text-navy w-20 text-right">
+                <span className="text-sm font-semibold text-espresso w-20 text-right">
                   ${(lineCents / 100).toFixed(2)}
                 </span>
               )}
@@ -62,12 +62,12 @@ export function CartSummary({ hidePrices = false, maxQty = 20 }: CartSummaryProp
           );
         })}
       </div>
-      <div className="border-t border-navy/10 mt-3 pt-3 flex justify-between items-center">
-        <span className="text-sm text-navy/60">
+      <div className="border-t border-espresso/10 mt-3 pt-3 flex justify-between items-center">
+        <span className="text-sm text-espresso/60">
           {totalQuantity} {label}
         </span>
         {!hidePrices && (
-          <span className="font-semibold text-navy">
+          <span className="font-semibold text-espresso">
             ${(totalCents / 100).toFixed(2)}
           </span>
         )}

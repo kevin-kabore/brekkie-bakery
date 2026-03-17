@@ -21,7 +21,7 @@ export function AddressInput({ value, onChange, prefix = "" }: AddressInputProps
 
   return (
     <fieldset>
-      <legend className="text-sm font-medium text-navy mb-2">
+      <legend className="text-sm font-medium text-espresso mb-2">
         Delivery Address
       </legend>
       <div className="flex flex-col gap-3">

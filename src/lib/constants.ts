@@ -1,8 +1,8 @@
 import type { Product } from "@/types";
 
 export const NAV_LINKS = [
-  { label: "Products", href: "#products" },
-  { label: "Why Brekkie", href: "#why" },
+  { label: "Flavors", href: "#products" },
+  { label: "How It Works", href: "#how" },
   { label: "Our Story", href: "#story" },
   { label: "Order", href: "#order" },
 ];
@@ -22,8 +22,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     allergens: ["Milk", "Eggs", "Wheat", "Soy"],
     description: "Our original protein-packed banana bread with premium chocolate chips.",
     image: "/images/loaves/classic_1.jpg",
-    accentColor: "#F0C75E",
-    stripeColor: "#F0C75E",
+    accentColor: "#E8B44C",
+    stripeColor: "#E8B44C",
     inventoryRemaining: null,
     isActive: true,
     sortOrder: 1,
@@ -39,8 +39,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     allergens: ["Milk", "Eggs", "Wheat", "Soy"],
     description: "Wild blueberries meet rich chocolate chips in our most popular flavor.",
     image: "/images/loaves/blueberry_1.jpg",
-    accentColor: "#B8A0CC",
-    stripeColor: "#3B4D7A",
+    accentColor: "#8FA882",
+    stripeColor: "#8FA882",
     inventoryRemaining: null,
     isActive: true,
     sortOrder: 2,
@@ -56,8 +56,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     allergens: ["Milk", "Eggs", "Wheat", "Soy", "Tree Nuts"],
     description: "Crunchy walnuts paired with chocolate chips for the ultimate texture.",
     image: "/images/loaves/walnut_1.jpg",
-    accentColor: "#9CB5A0",
-    stripeColor: "#9CB5A0",
+    accentColor: "#C8703E",
+    stripeColor: "#C8703E",
     inventoryRemaining: null,
     isActive: true,
     sortOrder: 3,

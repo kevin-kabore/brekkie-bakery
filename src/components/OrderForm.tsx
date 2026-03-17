@@ -46,7 +46,7 @@ function StepIndicator({ step, labels }: { step: number; labels: [string, string
             {i > 0 && (
               <div
                 className={`h-px flex-1 transition-colors ${
-                  isCompleted || isActive ? "bg-coral" : "bg-navy/15"
+                  isCompleted || isActive ? "bg-crust" : "bg-espresso/15"
                 }`}
               />
             )}
@@ -54,10 +54,10 @@ function StepIndicator({ step, labels }: { step: number; labels: [string, string
               <div
                 className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                   isActive
-                    ? "bg-coral text-cream"
+                    ? "bg-crust text-cream"
                     : isCompleted
-                      ? "bg-coral/20 text-coral"
-                      : "bg-navy/10 text-navy/40"
+                      ? "bg-crust/20 text-crust"
+                      : "bg-espresso/10 text-espresso/40"
                 }`}
               >
                 {isCompleted ? (
@@ -70,7 +70,7 @@ function StepIndicator({ step, labels }: { step: number; labels: [string, string
               </div>
               <span
                 className={`text-sm font-medium transition-colors ${
-                  isActive ? "text-navy" : isCompleted ? "text-navy/60" : "text-navy/40"
+                  isActive ? "text-espresso" : isCompleted ? "text-espresso/60" : "text-espresso/40"
                 }`}
               >
                 {label}
@@ -245,7 +245,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
   // ── Terminal states ────────────────────────────────
   if (submitState === "success") {
     return (
-      <div className="bg-white rounded-2xl shadow-lg max-w-2xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-sm border border-stone/60 max-w-2xl mx-auto">
         <div className="bg-green-50 rounded-xl p-8 text-center">
           <div className="text-4xl mb-4">&#10003;</div>
           <p className="text-green-800 font-semibold text-lg">
@@ -260,7 +260,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
 
   if (submitState === "error") {
     return (
-      <div className="bg-white rounded-2xl shadow-lg max-w-2xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-sm border border-stone/60 max-w-2xl mx-auto">
         <div className="bg-red-50 rounded-xl p-4 text-center">
           <p className="text-red-800 font-semibold mb-3">
             Something went wrong. Please try again or email{" "}
@@ -289,8 +289,8 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Tabs */}
-      <div className="flex">
+      {/* Tabs — pill/segment control */}
+      <div className="inline-flex bg-stone/50 rounded-lg p-1 mb-6">
         <button
           type="button"
           onClick={() => {
@@ -300,8 +300,8 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
           }}
           className={
             activeTab === "preorder"
-              ? "bg-navy text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
-              : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20 cursor-pointer"
+              ? "bg-espresso text-cream rounded-lg px-6 py-3 font-semibold cursor-pointer"
+              : "text-espresso/60 hover:text-espresso px-6 py-3 cursor-pointer"
           }
         >
           Preorder
@@ -315,8 +315,8 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
           }}
           className={
             activeTab === "wholesale"
-              ? "bg-navy text-cream rounded-t-lg px-6 py-3 font-semibold cursor-pointer"
-              : "bg-transparent text-navy/60 hover:text-navy px-6 py-3 border-b-2 border-navy/20 cursor-pointer"
+              ? "bg-espresso text-cream rounded-lg px-6 py-3 font-semibold cursor-pointer"
+              : "text-espresso/60 hover:text-espresso px-6 py-3 cursor-pointer"
           }
         >
           Wholesale
@@ -324,10 +324,10 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
       </div>
 
       {/* Form card */}
-      <div className="bg-white rounded-2xl rounded-tl-none shadow-lg p-6 md:p-8">
+      <div className="bg-white rounded-2xl shadow-sm border border-stone/60 p-6 md:p-8">
         {preordersClosed ? (
           <div className="text-center py-8">
-            <p className="text-navy/60 text-lg">
+            <p className="text-espresso/60 text-lg">
               Preorders are currently closed. Check back soon!
             </p>
           </div>
@@ -345,8 +345,8 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
 
                 {activeTab === "preorder" ? (
                   <>
-                    <div className="border-t border-navy/10 pt-5">
-                      <h3 className="font-display text-base text-navy mb-4">Contact Information</h3>
+                    <div className="border-t border-espresso/10 pt-5">
+                      <h3 className="font-display text-base text-espresso mb-4">Contact Information</h3>
                       <div className="flex flex-col gap-4">
                         <Input
                           label="Name"
@@ -379,8 +379,8 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
                   </>
                 ) : (
                   <>
-                    <div className="border-t border-navy/10 pt-5">
-                      <h3 className="font-display text-base text-navy mb-4">Business Information</h3>
+                    <div className="border-t border-espresso/10 pt-5">
+                      <h3 className="font-display text-base text-espresso mb-4">Business Information</h3>
                       <div className="flex flex-col gap-4">
                         <Input
                           label="Business Name"
@@ -438,7 +438,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
                   type="button"
                   variant="primary"
                   size="lg"
-                  className="w-full"
+                  className="w-full bg-crust hover:bg-crust-light text-cream"
                   disabled={totalQuantity === 0}
                   onClick={handleContinue}
                 >
@@ -451,21 +451,21 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
             {step === 2 && (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 {/* Compact order summary */}
-                <div className="rounded-lg bg-cream/50 border border-navy/10 px-4 py-3 flex items-center justify-between">
-                  <span className="text-sm text-navy/60">
+                <div className="rounded-lg bg-cream/50 border border-espresso/10 px-4 py-3 flex items-center justify-between">
+                  <span className="text-sm text-espresso/60">
                     {totalQuantity} {totalQuantity === 1 ? "loaf" : "loaves"}
                     {!isWholesale && <> &mdash; ${(totalCents / 100).toFixed(2)}</>}
                   </span>
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="text-sm text-coral font-medium hover:underline cursor-pointer"
+                    className="text-sm text-crust font-medium hover:underline cursor-pointer"
                   >
                     Edit order
                   </button>
                 </div>
 
-                <h3 className="font-display text-base text-navy">Delivery Details</h3>
+                <h3 className="font-display text-base text-espresso">Delivery Details</h3>
 
                 {activeTab === "preorder" ? (
                   <div className="flex flex-col gap-4">
@@ -526,7 +526,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
                     type="submit"
                     variant="primary"
                     size="lg"
-                    className="w-full"
+                    className="w-full bg-crust hover:bg-crust-light text-cream"
                     disabled={submitState === "submitting"}
                   >
                     {submitState === "submitting"
@@ -541,7 +541,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
                       setStep(1);
                       setFormError("");
                     }}
-                    className="text-sm text-navy/50 hover:text-navy transition-colors cursor-pointer text-center"
+                    className="text-sm text-espresso/50 hover:text-espresso transition-colors cursor-pointer text-center"
                   >
                     &larr; Back
                   </button>

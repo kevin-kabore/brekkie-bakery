@@ -36,7 +36,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
 
   return (
     <div
-      className="group/carousel relative aspect-[4/3] overflow-hidden"
+      className="group/carousel relative aspect-[4/3] overflow-hidden bg-cream-dark"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -65,7 +65,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
           <button
             type="button"
             onClick={() => goTo(current - 1)}
-            className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm text-navy/70 hover:text-navy hover:bg-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity cursor-pointer shadow-sm"
+            className="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm text-espresso/70 hover:text-espresso hover:bg-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all cursor-pointer shadow-md"
             aria-label="Previous image"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -75,7 +75,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
           <button
             type="button"
             onClick={() => goTo(current + 1)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm text-navy/70 hover:text-navy hover:bg-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity cursor-pointer shadow-sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm text-espresso/70 hover:text-espresso hover:bg-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all cursor-pointer shadow-md"
             aria-label="Next image"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -87,7 +87,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
 
       {/* Dots */}
       {count > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
           {images.map((_, i) => (
             <button
               key={i}
@@ -95,7 +95,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
               onClick={() => goTo(i)}
               className={`h-1.5 rounded-full transition-all cursor-pointer ${
                 i === current
-                  ? "w-4 bg-white"
+                  ? "w-5 bg-white shadow-sm"
                   : "w-1.5 bg-white/50 hover:bg-white/75"
               }`}
               aria-label={`View photo ${i + 1}`}

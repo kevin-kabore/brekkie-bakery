@@ -34,10 +34,10 @@ export default async function OrderSuccessPage({ searchParams }: SuccessPageProp
 
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center px-6 py-20">
-      <div className="bg-white rounded-2xl shadow-lg max-w-lg w-full p-8 text-center">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="bg-white rounded-2xl shadow-lg border border-stone/60 max-w-lg w-full p-8 text-center">
+        <div className="w-16 h-16 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
-            className="w-8 h-8 text-green-600"
+            className="w-8 h-8 text-sage"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -51,26 +51,26 @@ export default async function OrderSuccessPage({ searchParams }: SuccessPageProp
           </svg>
         </div>
 
-        <h1 className="font-display text-3xl text-navy mb-2">
+        <h1 className="font-display text-3xl text-espresso mb-2">
           Order Confirmed!
         </h1>
 
         {meta?.order_number && (
-          <p className="text-navy/60 mb-6">
+          <p className="text-espresso/60 mb-6">
             Order #{meta.order_number}
           </p>
         )}
 
-        <div className="border-t border-navy/10 pt-6 mb-6">
+        <div className="border-t border-stone pt-6 mb-6">
           <div className="space-y-3 text-left">
             {lineItems.map((item) => (
               <div
                 key={item.id}
-                className="flex justify-between text-sm text-navy"
+                className="flex justify-between text-sm text-espresso"
               >
                 <span>
                   {item.description}{" "}
-                  <span className="text-navy/50">x{item.quantity}</span>
+                  <span className="text-espresso/50">x{item.quantity}</span>
                 </span>
                 <span className="font-medium">
                   ${((item.amount_total ?? 0) / 100).toFixed(2)}
@@ -80,7 +80,7 @@ export default async function OrderSuccessPage({ searchParams }: SuccessPageProp
           </div>
 
           {totalFormatted && (
-            <div className="flex justify-between mt-4 pt-4 border-t border-navy/10 font-semibold text-navy">
+            <div className="flex justify-between mt-4 pt-4 border-t border-stone font-semibold text-espresso">
               <span>Total</span>
               <span>{totalFormatted}</span>
             </div>
@@ -88,20 +88,20 @@ export default async function OrderSuccessPage({ searchParams }: SuccessPageProp
         </div>
 
         {meta?.delivery_date && (
-          <p className="text-sm text-navy/60 mb-2">
+          <p className="text-sm text-espresso/60 mb-2">
             Delivery date: {meta.delivery_date}
           </p>
         )}
 
         {session.customer_email && (
-          <p className="text-sm text-navy/60 mb-6">
+          <p className="text-sm text-espresso/60 mb-6">
             Receipt sent to {session.customer_email}
           </p>
         )}
 
         <Link
           href="/"
-          className="inline-block bg-navy text-cream px-6 py-3 rounded-full font-semibold hover:bg-navy/90 transition"
+          className="inline-block bg-espresso text-cream px-6 py-3 rounded-full font-semibold hover:bg-espresso-light transition-colors"
         >
           Back to Home
         </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Search, ShoppingBag, Menu, X } from "lucide-react";
 import { NAV_LINKS } from "@/lib/constants";
 import { useCart } from "@/context/CartContext";
 
@@ -24,13 +25,20 @@ export function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-cream/95 backdrop-blur-sm shadow-sm" : "bg-transparent"
+        scrolled
+          ? "bg-cream/80 backdrop-blur-lg shadow-sm"
+          : "bg-transparent"
       }`}
     >
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-        {/* Logo */}
-        <a href="#" className="font-display text-navy text-2xl">
-          BREKKIE
+      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-18">
+        {/* Brand logo */}
+        <a href="#" className="flex flex-col leading-none">
+          <span className="font-display text-espresso text-2xl tracking-tight">
+            Brekkie
+          </span>
+          <span className="font-accent text-crust text-sm -mt-1">
+            bakery
+          </span>
         </a>
 
         {/* Desktop nav links */}
@@ -39,86 +47,98 @@ export function Navbar() {
             <a
               key={link.href}
               href={link.href}
-              className="text-navy/70 hover:text-navy transition-colors duration-200 font-body text-sm uppercase tracking-wide"
+              className="font-body text-sm uppercase tracking-wider text-espresso/60 hover:text-espresso transition-all duration-300"
             >
               {link.label}
             </a>
           ))}
         </div>
 
-        {/* Desktop CTA with cart badge */}
-        <a
-          href="#order"
-          className="hidden md:inline-block rounded-full font-semibold transition-colors duration-200 bg-coral text-cream hover:bg-coral/90 px-6 py-3 text-sm relative"
-        >
-          ORDER NOW
-          {totalQuantity > 0 && (
-            <span className="absolute -top-2 -right-2 bg-navy text-cream text-xs font-bold h-5 w-5 rounded-full flex items-center justify-center">
-              {totalQuantity}
-            </span>
-          )}
-        </a>
+        {/* Desktop icons */}
+        <div className="hidden md:flex items-center gap-4">
+          {/* Search icon */}
+          <a
+            href="#products"
+            className="text-espresso/60 hover:text-espresso transition-all duration-300 p-2"
+            aria-label="Search products"
+          >
+            <Search className="w-5 h-5" />
+          </a>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden text-navy p-2"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
+          {/* Shopping bag with badge */}
+          <a
+            href="#order"
+            className="relative text-espresso/60 hover:text-espresso transition-all duration-300 p-2"
+            aria-label="Shopping bag"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            {totalQuantity > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-crust text-cream text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-full flex items-center justify-center animate-bounce">
+                {totalQuantity}
+              </span>
+            )}
+          </a>
+        </div>
+
+        {/* Mobile icons */}
+        <div className="flex md:hidden items-center gap-2">
+          {/* Mobile cart */}
+          <a
+            href="#order"
+            onClick={handleLinkClick}
+            className="relative text-espresso/60 hover:text-espresso transition-all duration-300 p-2"
+            aria-label="Shopping bag"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            {totalQuantity > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-crust text-cream text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-full flex items-center justify-center animate-bounce">
+                {totalQuantity}
+              </span>
+            )}
+          </a>
+
+          {/* Hamburger / X toggle */}
+          <button
+            className="text-espresso p-2 transition-all duration-300"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
           >
             {menuOpen ? (
-              <>
-                <line x1="6" y1="6" x2="18" y2="18" />
-                <line x1="6" y1="18" x2="18" y2="6" />
-              </>
+              <X className="w-6 h-6" />
             ) : (
-              <>
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </>
+              <Menu className="w-6 h-6" />
             )}
-          </svg>
-        </button>
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ${
-          menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
-        } bg-cream/95 backdrop-blur-sm`}
+          menuOpen
+            ? "max-h-96 opacity-100"
+            : "max-h-0 opacity-0"
+        } bg-cream/80 backdrop-blur-lg`}
       >
-        <div className="px-6 pb-6 flex flex-col gap-4">
+        <div className="max-w-6xl mx-auto px-6 pb-8 pt-2 flex flex-col gap-1">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={handleLinkClick}
-              className="text-navy/70 hover:text-navy transition-colors duration-200 font-body text-sm uppercase tracking-wide py-2"
+              className="font-body text-sm uppercase tracking-wider text-espresso/60 hover:text-espresso transition-all duration-300 py-3 border-b border-espresso/5 last:border-b-0"
             >
               {link.label}
             </a>
           ))}
           <a
-            href="#order"
+            href="#products"
             onClick={handleLinkClick}
-            className="rounded-full font-semibold transition-colors duration-200 bg-coral text-cream hover:bg-coral/90 px-6 py-3 text-sm text-center relative"
+            className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-espresso/60 hover:text-espresso transition-all duration-300 py-3"
           >
-            ORDER NOW
-            {totalQuantity > 0 && (
-              <span className="absolute -top-2 right-1/4 bg-navy text-cream text-xs font-bold h-5 w-5 rounded-full flex items-center justify-center">
-                {totalQuantity}
-              </span>
-            )}
+            <Search className="w-4 h-4" />
+            Search Products
           </a>
         </div>
       </div>

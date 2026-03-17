@@ -6,17 +6,20 @@ export function OurStory() {
   const { ref, isInView } = useInView();
 
   return (
-    <section id="story" className="py-20 px-6 bg-white">
+    <section id="story" className="py-24 px-6 bg-espresso text-cream">
       <div
         ref={ref}
-        className={`max-w-2xl mx-auto text-center transition-all duration-700 ${
+        className={`max-w-3xl mx-auto text-center transition-all duration-700 ${
           isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
       >
-        <h2 className="font-display text-4xl md:text-5xl text-navy mb-8">
+        <span className="font-display text-8xl text-crust/30 leading-none select-none">
+          &ldquo;
+        </span>
+        <h2 className="font-display text-4xl md:text-5xl text-cream mb-8">
           Our Story
         </h2>
-        <div className="text-lg text-navy/70 leading-relaxed space-y-6">
+        <div className="text-lg text-cream/70 leading-relaxed space-y-6">
           <p>
             It started in a small Chelsea apartment with a simple question: why
             can&apos;t breakfast taste like dessert AND fuel your day?
@@ -34,7 +37,7 @@ export function OurStory() {
             to look forward to breakfast.
           </p>
         </div>
-        <p className="font-script text-2xl md:text-3xl text-coral mt-12">
+        <p className="font-accent text-3xl md:text-4xl text-crust mt-12">
           everything intentional. nothing artificial.
         </p>
       </div>

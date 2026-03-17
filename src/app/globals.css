@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: #1B2A4A;
-  --color-navy-light: #2A3F6E;
-  --color-coral: #D4845E;
-  --color-golden: #F0C75E;
-  --color-sage: #9CB5A0;
-  --color-lavender: #B8A0CC;
-  --color-olive: #A4AD7B;
-  --color-cream: #FEFCF3;
+  /* ── Warm bakery palette ────────────────────────── */
+  --color-cream: #FDF6EC;
+  --color-cream-dark: #F5EBD8;
+  --color-stone: #E8DED0;
+  --color-espresso: #2C1810;
+  --color-espresso-light: #4A3428;
+  --color-crust: #C8703E;
+  --color-crust-light: #D4884F;
+  --color-golden: #E8B44C;
+  --color-sage: #8FA882;
+  --color-sage-light: #B5C9AB;
 
-  --font-display: var(--font-lilita), cursive;
-  --font-script: var(--font-pacifico), cursive;
-  --font-body: var(--font-inter), system-ui, sans-serif;
+  /* ── Typography ─────────────────────────────────── */
+  --font-display: var(--font-dm-serif), Georgia, serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
+  --font-accent: var(--font-caveat), cursive;
 }
 
 @layer base {

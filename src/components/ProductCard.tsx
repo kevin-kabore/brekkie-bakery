@@ -5,6 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { QuantityStepper } from "@/components/QuantityStepper";
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { getProductImages } from "@/lib/images";
+import { ShoppingBag } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -17,21 +18,26 @@ export function ProductCard({ product }: ProductCardProps) {
   const images = getProductImages(product.slug);
 
   return (
-    <div className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-white">
+    <div className="group rounded-2xl overflow-hidden bg-white border border-stone/80 hover:border-crust/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <div
+        className="h-[3px]"
+        style={{ backgroundColor: product.accentColor }}
+      />
+
       <ImageCarousel images={images.carousel} alt={`${product.name} banana bread`} />
 
-      <div className="p-5">
+      <div className="p-6">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="font-display text-lg text-navy">{product.name}</h3>
-          <span className="shrink-0 text-sm font-bold text-navy/80">
+          <h3 className="font-display text-xl text-espresso">{product.name}</h3>
+          <span className="shrink-0 text-crust font-semibold text-lg">
             {priceDisplay}
           </span>
         </div>
 
-        <p className="text-navy/50 text-sm">
+        <p className="text-espresso/50 text-sm">
           {product.proteinGrams}g Protein &middot; {product.calories} cal per slice
         </p>
-        <p className="text-navy/40 text-xs">
+        <p className="text-espresso/40 text-xs">
           12 slices per loaf
         </p>
 
@@ -39,7 +45,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.allergens.map((allergen) => (
             <span
               key={allergen}
-              className="text-[11px] bg-navy/5 text-navy/50 px-2 py-0.5 rounded-full"
+              className="text-[11px] bg-stone/60 text-espresso/50 px-2 py-0.5 rounded-full"
             >
               {allergen}
             </span>
@@ -50,9 +56,10 @@ export function ProductCard({ product }: ProductCardProps) {
           <button
             type="button"
             onClick={() => increment(product.id)}
-            className="w-full bg-coral hover:bg-coral/90 text-cream font-semibold py-3 rounded-full transition-colors cursor-pointer text-sm"
+            className="w-full bg-crust hover:bg-crust-light text-cream font-semibold py-3 rounded-full transition-all cursor-pointer text-sm flex items-center justify-center gap-2"
           >
-            + Add to Cart
+            <ShoppingBag size={16} />
+            Add to Cart
           </button>
         ) : (
           <div className="flex justify-center">

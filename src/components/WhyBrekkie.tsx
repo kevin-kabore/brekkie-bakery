@@ -1,32 +1,33 @@
 "use client";
 
 import { useInView } from "@/hooks/useInView";
+import { Zap, Leaf, ChefHat, type LucideIcon } from "lucide-react";
 
 const FEATURES = [
   {
-    icon: "\uD83D\uDCAA",
+    Icon: Zap,
     title: "12g Protein",
-    text: "Every serving packs 12 grams of protein to fuel your morning \u2014 or your afternoon, or your midnight snack.",
+    text: "Every serving packs 12 grams of protein to fuel your morning — or your afternoon, or your midnight snack.",
   },
   {
-    icon: "\uD83C\uDF3F",
+    Icon: Leaf,
     title: "All Natural",
     text: "Everything intentional. Nothing artificial. Just real ingredients you can pronounce, baked into something extraordinary.",
   },
   {
-    icon: "\uD83C\uDFE0",
+    Icon: ChefHat,
     title: "Small Batch",
     text: "Baked in small batches in New York City. Because good things take time, and great things take a little more.",
   },
 ];
 
-function FeatureBlock({
-  icon,
+function FeatureCard({
+  Icon,
   title,
   text,
   delay,
 }: {
-  icon: string;
+  Icon: LucideIcon;
   title: string;
   text: string;
   delay: string;
@@ -36,32 +37,32 @@ function FeatureBlock({
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ${
+      className={`flex flex-col items-center text-center transition-all duration-700 ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
       }`}
       style={{ transitionDelay: delay }}
     >
-      <p className="text-5xl text-center">{icon}</p>
-      <h3 className="font-display text-2xl text-navy mt-4 text-center">
-        {title}
-      </h3>
-      <p className="text-navy/70 text-center mt-2">{text}</p>
+      <div className="w-16 h-16 rounded-2xl bg-crust/10 text-crust flex items-center justify-center">
+        <Icon className="w-8 h-8" />
+      </div>
+      <h3 className="font-display text-xl text-espresso mt-4">{title}</h3>
+      <p className="text-espresso/60 mt-2 max-w-xs">{text}</p>
     </div>
   );
 }
 
 export function WhyBrekkie() {
   return (
-    <section id="why" className="py-20 px-6">
+    <section id="why" className="py-24 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
-        <h2 className="font-display text-4xl md:text-5xl text-center text-navy mb-16">
-          Why Brekkie?
+        <h2 className="font-display text-4xl md:text-5xl text-center text-espresso mb-16">
+          The Brekkie Difference
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {FEATURES.map((feature, i) => (
-            <FeatureBlock
+            <FeatureCard
               key={feature.title}
-              icon={feature.icon}
+              Icon={feature.Icon}
               title={feature.title}
               text={feature.text}
               delay={`${i * 150}ms`}

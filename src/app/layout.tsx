@@ -1,22 +1,21 @@
 import type { Metadata } from "next";
-import { Inter, Lilita_One, Pacifico } from "next/font/google";
+import { DM_Serif_Display, DM_Sans, Caveat } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const lilitaOne = Lilita_One({
+const dmSerif = DM_Serif_Display({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-lilita",
+  variable: "--font-dm-serif",
 });
 
-const pacifico = Pacifico({
-  weight: "400",
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-pacifico",
+  variable: "--font-dm-sans",
+});
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
 });
 
 export const metadata: Metadata = {
@@ -40,9 +39,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${lilitaOne.variable} ${pacifico.variable}`}
+      className={`${dmSerif.variable} ${dmSans.variable} ${caveat.variable}`}
     >
-      <body className="bg-cream text-navy font-body antialiased">
+      <body className="bg-cream text-espresso font-body antialiased">
         {children}
       </body>
     </html>
