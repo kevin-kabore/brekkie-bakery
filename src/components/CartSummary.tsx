@@ -1,0 +1,77 @@
+"use client";
+
+import { useCart } from "@/context/CartContext";
+import { QuantityStepper } from "@/components/QuantityStepper";
+
+interface CartSummaryProps {
+  /** Hide prices (wholesale tab) */
+  hidePrices?: boolean;
+  maxQty?: number;
+}
+
+export function CartSummary({ hidePrices = false, maxQty = 20 }: CartSummaryProps) {
+  const { items, products, totalQuantity, totalCents, increment, decrement } =
+    useCart();
+
+  const cartProducts = products.filter((p) => (items[p.id] || 0) > 0);
+
+  if (cartProducts.length === 0) {
+    return (
+      <div className="rounded-xl border border-navy/10 bg-cream/50 p-6 text-center">
+        <p className="text-navy/50 mb-3">Your cart is empty</p>
+        <a
+          href="#products"
+          className="text-coral font-semibold hover:underline text-sm"
+        >
+          Browse Flavors
+        </a>
+      </div>
+    );
+  }
+
+  const label = totalQuantity === 1 ? "loaf" : "loaves";
+
+  return (
+    <div className="rounded-xl border border-navy/10 bg-cream/50 p-4">
+      <h3 className="font-display text-lg text-navy mb-3">Your Order</h3>
+      <div className="flex flex-col gap-3">
+        {cartProducts.map((product) => {
+          const qty = items[product.id];
+          const lineCents = qty * product.priceCents;
+          return (
+            <div
+              key={product.id}
+              className="flex items-center justify-between gap-3"
+            >
+              <span className="text-sm text-navy flex-1 truncate">
+                {product.name}
+              </span>
+              <QuantityStepper
+                quantity={qty}
+                onIncrement={() => increment(product.id)}
+                onDecrement={() => decrement(product.id)}
+                max={maxQty}
+                size="sm"
+              />
+              {!hidePrices && (
+                <span className="text-sm font-semibold text-navy w-20 text-right">
+                  ${(lineCents / 100).toFixed(2)}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="border-t border-navy/10 mt-3 pt-3 flex justify-between items-center">
+        <span className="text-sm text-navy/60">
+          {totalQuantity} {label}
+        </span>
+        {!hidePrices && (
+          <span className="font-semibold text-navy">
+            ${(totalCents / 100).toFixed(2)}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}

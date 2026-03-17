@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { OrderForm, type TabType } from "@/components/OrderForm";
-import type { Product, Settings } from "@/types";
+import type { Settings } from "@/types";
 
 interface OrderSectionProps {
-  products: Product[];
+  products: unknown; // kept for page.tsx compat — unused, cart comes from context
   settings: Settings;
 }
 
-export function OrderSection({ products, settings }: OrderSectionProps) {
+export function OrderSection({ settings }: OrderSectionProps) {
   const [defaultTab, setDefaultTab] = useState<TabType>("preorder");
 
   useEffect(() => {
@@ -32,7 +32,6 @@ export function OrderSection({ products, settings }: OrderSectionProps) {
         </p>
         <OrderForm
           defaultTab={defaultTab}
-          products={products}
           settings={settings}
         />
       </div>

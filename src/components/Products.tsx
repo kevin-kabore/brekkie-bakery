@@ -1,9 +1,13 @@
-import { getProducts } from "@/lib/products";
+"use client";
+
 import { ProductCard } from "@/components/ProductCard";
+import type { Product } from "@/types";
 
-export async function Products() {
-  const products = await getProducts();
+interface ProductsProps {
+  products: Product[];
+}
 
+export function Products({ products }: ProductsProps) {
   return (
     <section id="products" className="py-20 px-6 bg-cream">
       <div className="max-w-6xl mx-auto">

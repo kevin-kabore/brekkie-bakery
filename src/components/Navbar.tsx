@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { NAV_LINKS } from "@/lib/constants";
+import { useCart } from "@/context/CartContext";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { totalQuantity } = useCart();
 
   useEffect(() => {
     function handleScroll() {
@@ -44,12 +46,17 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* Desktop CTA */}
+        {/* Desktop CTA with cart badge */}
         <a
           href="#order"
-          className="hidden md:inline-block rounded-full font-semibold transition-colors duration-200 bg-coral text-cream hover:bg-coral/90 px-6 py-3 text-sm"
+          className="hidden md:inline-block rounded-full font-semibold transition-colors duration-200 bg-coral text-cream hover:bg-coral/90 px-6 py-3 text-sm relative"
         >
           ORDER NOW
+          {totalQuantity > 0 && (
+            <span className="absolute -top-2 -right-2 bg-navy text-cream text-xs font-bold h-5 w-5 rounded-full flex items-center justify-center">
+              {totalQuantity}
+            </span>
+          )}
         </a>
 
         {/* Mobile hamburger */}
@@ -104,9 +111,14 @@ export function Navbar() {
           <a
             href="#order"
             onClick={handleLinkClick}
-            className="rounded-full font-semibold transition-colors duration-200 bg-coral text-cream hover:bg-coral/90 px-6 py-3 text-sm text-center"
+            className="rounded-full font-semibold transition-colors duration-200 bg-coral text-cream hover:bg-coral/90 px-6 py-3 text-sm text-center relative"
           >
             ORDER NOW
+            {totalQuantity > 0 && (
+              <span className="absolute -top-2 right-1/4 bg-navy text-cream text-xs font-bold h-5 w-5 rounded-full flex items-center justify-center">
+                {totalQuantity}
+              </span>
+            )}
           </a>
         </div>
       </div>

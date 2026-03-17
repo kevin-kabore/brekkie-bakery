@@ -6,8 +6,10 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { AddressInput, formatAddress } from "@/components/ui/AddressInput";
+import { CartSummary } from "@/components/CartSummary";
+import { useCart } from "@/context/CartContext";
 import { BUSINESS_TYPES, FREQUENCIES } from "@/lib/constants";
-import type { AddressData, DeliveryFormData, Product, Settings, WholesaleFormData } from "@/types";
+import type { AddressData, DeliveryFormData, Settings, WholesaleFormData } from "@/types";
 
 export type TabType = "preorder" | "wholesale";
 type SubmitState = "idle" | "submitting" | "success" | "error";
@@ -26,14 +28,6 @@ const emptyAddress: AddressData = {
   zip: "",
 };
 
-function buildInitialItems(products: Product[]): Record<string, number> {
-  const items: Record<string, number> = {};
-  for (const p of products) {
-    items[p.id] = 0;
-  }
-  return items;
-}
-
 const businessTypeOptions = BUSINESS_TYPES.map((type) => ({
   value: type.toLowerCase(),
   label: type,
@@ -41,28 +35,27 @@ const businessTypeOptions = BUSINESS_TYPES.map((type) => ({
 
 interface OrderFormProps {
   defaultTab?: TabType;
-  products: Product[];
   settings: Settings;
 }
 
-export function OrderForm({ defaultTab = "preorder", products, settings }: OrderFormProps) {
+export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps) {
+  const { items, totalQuantity, totalCents, clear } = useCart();
+
   const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
-  const [deliveryData, setDeliveryData] = useState<DeliveryFormData>({
+  const [deliveryData, setDeliveryData] = useState<Omit<DeliveryFormData, "items">>({
     name: "",
     email: "",
     phone: "",
-    items: buildInitialItems(products),
     deliveryDate: "",
     address: { ...emptyAddress },
     specialInstructions: "",
   });
-  const [wholesaleData, setWholesaleData] = useState<WholesaleFormData>({
+  const [wholesaleData, setWholesaleData] = useState<Omit<WholesaleFormData, "items">>({
     businessName: "",
     contactName: "",
     email: "",
     phone: "",
     businessType: "",
-    items: buildInitialItems(products),
     address: { ...emptyAddress },
     frequency: "one-time",
     specialInstructions: "",
@@ -70,51 +63,26 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [formError, setFormError] = useState("");
 
-  function updateDelivery<K extends keyof DeliveryFormData>(
+  function updateDelivery<K extends keyof Omit<DeliveryFormData, "items">>(
     field: K,
-    value: DeliveryFormData[K]
+    value: Omit<DeliveryFormData, "items">[K]
   ) {
     setDeliveryData((prev) => ({ ...prev, [field]: value }));
   }
 
-  function updateWholesale<K extends keyof WholesaleFormData>(
+  function updateWholesale<K extends keyof Omit<WholesaleFormData, "items">>(
     field: K,
-    value: WholesaleFormData[K]
+    value: Omit<WholesaleFormData, "items">[K]
   ) {
     setWholesaleData((prev) => ({ ...prev, [field]: value }));
   }
-
-  function updateItem(
-    tab: "preorder" | "wholesale",
-    productId: string,
-    qty: number
-  ) {
-    const clamped = Math.max(0, Math.min(tab === "preorder" ? 20 : 100, qty));
-    if (tab === "preorder") {
-      setDeliveryData((prev) => ({
-        ...prev,
-        items: { ...prev.items, [productId]: clamped },
-      }));
-    } else {
-      setWholesaleData((prev) => ({
-        ...prev,
-        items: { ...prev.items, [productId]: clamped },
-      }));
-    }
-  }
-
-  const currentItems = activeTab === "preorder" ? deliveryData.items : wholesaleData.items;
-  const totalQty = Object.values(currentItems).reduce((sum, q) => sum + q, 0);
-  const totalCents = activeTab === "preorder"
-    ? products.reduce((sum, p) => sum + (currentItems[p.id] || 0) * p.priceCents, 0)
-    : 0;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFormError("");
 
-    if (totalQty === 0) {
-      setFormError("Please select at least one flavor.");
+    if (totalQuantity === 0) {
+      setFormError("Please add items to your cart first.");
       return;
     }
 
@@ -127,12 +95,11 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
 
     try {
       if (activeTab === "preorder") {
-        // Stripe checkout flow
         const payload = {
           name: deliveryData.name,
           email: deliveryData.email,
           phone: deliveryData.phone,
-          items: deliveryData.items,
+          items,
           deliveryDate: deliveryData.deliveryDate,
           address: deliveryData.address,
           specialInstructions: deliveryData.specialInstructions,
@@ -155,14 +122,13 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
           throw new Error(result.error || "Checkout failed");
         }
 
-        // Redirect to Stripe Checkout
         window.location.href = result.url;
         return;
       } else {
-        // Wholesale: direct submission (no payment)
         const payload = {
           formType: "wholesale",
           ...wholesaleData,
+          items,
           deliveryAddress: formatAddress(wholesaleData.address),
         };
 
@@ -177,6 +143,7 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
         }
 
         setSubmitState("success");
+        clear();
         setTimeout(() => {
           setSubmitState("idle");
           setWholesaleData({
@@ -185,7 +152,6 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
             email: "",
             phone: "",
             businessType: "",
-            items: buildInitialItems(products),
             address: { ...emptyAddress },
             frequency: "one-time",
             specialInstructions: "",
@@ -238,6 +204,7 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
   }
 
   const preordersClosed = !settings.preordersOpen && activeTab === "preorder";
+  const isWholesale = activeTab === "wholesale";
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -281,6 +248,12 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            {/* Cart summary at top */}
+            <CartSummary
+              hidePrices={isWholesale}
+              maxQty={isWholesale ? 100 : 20}
+            />
+
             {activeTab === "preorder" ? (
               <>
                 <Input
@@ -314,30 +287,6 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
                   prefix="shipping "
                 />
 
-                <fieldset>
-                  <legend className="text-sm font-medium text-navy mb-1">
-                    How many would you like?
-                  </legend>
-                  <p className="text-xs text-navy/50 mb-3">
-                    {settings.globalRemaining} loaves available this batch
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {products.map((product) => (
-                      <Input
-                        key={product.id}
-                        label={product.name}
-                        type="number"
-                        min={0}
-                        max={20}
-                        value={deliveryData.items[product.id] || 0}
-                        onChange={(e) =>
-                          updateItem("preorder", product.id, Number(e.target.value))
-                        }
-                      />
-                    ))}
-                  </div>
-                </fieldset>
-
                 <Input
                   label="Preferred Delivery Date"
                   type="date"
@@ -354,12 +303,6 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
                     updateDelivery("specialInstructions", e.target.value)
                   }
                 />
-
-                {totalQty > 0 && (
-                  <div className="text-right text-navy font-semibold">
-                    {totalQty} {totalQty === 1 ? "loaf" : "loaves"} &mdash; ${(totalCents / 100).toFixed(2)}
-                  </div>
-                )}
               </>
             ) : (
               <>
@@ -415,27 +358,6 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
                   prefix="billing "
                 />
 
-                <fieldset>
-                  <legend className="text-sm font-medium text-navy mb-2">
-                    Quantity (loaves)
-                  </legend>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {products.map((product) => (
-                      <Input
-                        key={product.id}
-                        label={product.name}
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={wholesaleData.items[product.id] || 0}
-                        onChange={(e) =>
-                          updateItem("wholesale", product.id, Number(e.target.value))
-                        }
-                      />
-                    ))}
-                  </div>
-                </fieldset>
-
                 <Select
                   label="Order Frequency"
                   required
@@ -468,15 +390,17 @@ export function OrderForm({ defaultTab = "preorder", products, settings }: Order
               variant="primary"
               size="lg"
               className="w-full"
-              disabled={submitState === "submitting"}
+              disabled={submitState === "submitting" || totalQuantity === 0}
             >
               {submitState === "submitting"
                 ? "Processing..."
                 : activeTab === "preorder"
                   ? totalCents > 0
                     ? `Checkout — $${(totalCents / 100).toFixed(2)}`
-                    : "Select items to continue"
-                  : "Submit Inquiry"}
+                    : "Add items to continue"
+                  : totalQuantity > 0
+                    ? "Submit Inquiry"
+                    : "Add items to continue"}
             </Button>
           </form>
         )}
