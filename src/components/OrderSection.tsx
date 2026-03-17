@@ -2,14 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { OrderForm, type TabType } from "@/components/OrderForm";
+import type { Product, Settings } from "@/types";
 
-export function OrderSection() {
-  const [defaultTab, setDefaultTab] = useState<TabType>("wholesale");
+interface OrderSectionProps {
+  products: Product[];
+  settings: Settings;
+}
+
+export function OrderSection({ products, settings }: OrderSectionProps) {
+  const [defaultTab, setDefaultTab] = useState<TabType>("preorder");
 
   useEffect(() => {
     if (window.location.hash === "#wholesale") {
       setDefaultTab("wholesale");
-      // Scroll to order section after a brief delay for render
       setTimeout(() => {
         document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
       }, 100);
@@ -25,7 +30,11 @@ export function OrderSection() {
         <p className="text-center text-navy/60 mb-12">
           Preorder for delivery or inquire about wholesale for your business.
         </p>
-        <OrderForm defaultTab={defaultTab} />
+        <OrderForm
+          defaultTab={defaultTab}
+          products={products}
+          settings={settings}
+        />
       </div>
     </section>
   );

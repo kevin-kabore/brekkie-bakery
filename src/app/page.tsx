@@ -5,8 +5,14 @@ import { WhyBrekkie } from "@/components/WhyBrekkie";
 import { OurStory } from "@/components/OurStory";
 import { OrderSection } from "@/components/OrderSection";
 import { Footer } from "@/components/Footer";
+import { getProducts, getSettings } from "@/lib/products";
 
-export default function Home() {
+export default async function Home() {
+  const [products, settings] = await Promise.all([
+    getProducts(),
+    getSettings(),
+  ]);
+
   return (
     <>
       <Navbar />
@@ -15,7 +21,7 @@ export default function Home() {
         <Products />
         <WhyBrekkie />
         <OurStory />
-        <OrderSection />
+        <OrderSection products={products} settings={settings} />
       </main>
       <Footer />
     </>

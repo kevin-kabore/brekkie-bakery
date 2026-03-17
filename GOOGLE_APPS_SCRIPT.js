@@ -22,15 +22,16 @@
 //   - Online orders from the website have Sales Agent = "Online"
 //   - Your field sales team's orders can be entered directly
 //
-// COLUMNS:
+// COLUMNS (20):
 //   Date | Type | Name/Business | Address | Phone | Email |
-//   Contact | Sales Agent | Classic | Blueberry | Walnut |
+//   Contact | Sales Agent | Order Number |
+//   Classic | Blueberry | Walnut | Coconut Walnut | Double Chocolate | Raspberry & White Choc |
 //   Total Loaves | Price/Loaf | Revenue | Frequency | Status | Notes
 //
 // PRICING:
 //   - Price/Loaf is editable per row. Defaults:
 //     Bodega/Cafe/Gym/Restaurant/Office = $30
-//     Preorders = blank (edit manually if needed)
+//     Preorders = $49.99
 //   - For distributors, manually set Price/Loaf (e.g. $22.50)
 //   - Revenue auto-calculates: Total Loaves × Price/Loaf
 //
@@ -47,9 +48,13 @@ var HEADERS = [
   "Email",
   "Contact (Manager)",
   "Sales Agent",
+  "Order Number",
   "Classic",
   "Blueberry",
   "Walnut",
+  "Coconut Walnut",
+  "Double Chocolate",
+  "Raspberry & White Choc",
   "Total Loaves",
   "Price/Loaf",
   "Revenue",
@@ -59,9 +64,25 @@ var HEADERS = [
 ];
 
 // Column indices (1-based)
-var COL_TOTAL_LOAVES = 12;
-var COL_PRICE = 13;
-var COL_REVENUE = 14;
+var COL_CLASSIC = 10;
+var COL_BLUEBERRY = 11;
+var COL_WALNUT = 12;
+var COL_COCONUT = 13;
+var COL_DOUBLE_CHOC = 14;
+var COL_RASPBERRY = 15;
+var COL_TOTAL_LOAVES = 16;
+var COL_PRICE = 17;
+var COL_REVENUE = 18;
+
+// Slug-to-column mapping for flavorQuantities format
+var FLAVOR_COLUMNS = {
+  "classic": COL_CLASSIC,
+  "blueberry": COL_BLUEBERRY,
+  "walnut": COL_WALNUT,
+  "coconut-walnut": COL_COCONUT,
+  "double-chocolate": COL_DOUBLE_CHOC,
+  "raspberry-white-choc": COL_RASPBERRY
+};
 
 function doPost(e) {
   try {
@@ -129,15 +150,19 @@ function getOrCreateWeeklySheet(ss) {
     sheet.setColumnWidth(6, 180);  // Email
     sheet.setColumnWidth(7, 120);  // Contact
     sheet.setColumnWidth(8, 100);  // Sales Agent
-    sheet.setColumnWidth(9, 60);   // Classic
-    sheet.setColumnWidth(10, 70);  // Blueberry
-    sheet.setColumnWidth(11, 60);  // Walnut
-    sheet.setColumnWidth(12, 95);  // Total Loaves
-    sheet.setColumnWidth(13, 85);  // Price/Loaf
-    sheet.setColumnWidth(14, 90);  // Revenue
-    sheet.setColumnWidth(15, 90);  // Frequency
-    sheet.setColumnWidth(16, 80);  // Status
-    sheet.setColumnWidth(17, 200); // Notes
+    sheet.setColumnWidth(9, 130);  // Order Number
+    sheet.setColumnWidth(10, 60);  // Classic
+    sheet.setColumnWidth(11, 70);  // Blueberry
+    sheet.setColumnWidth(12, 60);  // Walnut
+    sheet.setColumnWidth(13, 100); // Coconut Walnut
+    sheet.setColumnWidth(14, 110); // Double Chocolate
+    sheet.setColumnWidth(15, 130); // Raspberry & White Choc
+    sheet.setColumnWidth(16, 95);  // Total Loaves
+    sheet.setColumnWidth(17, 85);  // Price/Loaf
+    sheet.setColumnWidth(18, 90);  // Revenue
+    sheet.setColumnWidth(19, 90);  // Frequency
+    sheet.setColumnWidth(20, 80);  // Status
+    sheet.setColumnWidth(21, 200); // Notes
 
     // Format Price/Loaf and Revenue columns as currency
     sheet.getRange(2, COL_PRICE, 500).setNumberFormat("$#,##0.00");
@@ -152,11 +177,33 @@ function getOrCreateWeeklySheet(ss) {
 
 // ---- Write order rows ----
 
+function getFlavorQuantities(data) {
+  // New format: flavorQuantities map { slug: qty }
+  if (data.flavorQuantities) {
+    return data.flavorQuantities;
+  }
+
+  // Legacy format: classicQty, blueberryQty, walnutQty
+  return {
+    "classic": data.classicQty || 0,
+    "blueberry": data.blueberryQty || 0,
+    "walnut": data.walnutQty || 0
+  };
+}
+
 function writePreorder(sheet, data) {
-  var classic = data.classicQty || 0;
-  var blueberry = data.blueberryQty || 0;
-  var walnut = data.walnutQty || 0;
-  var total = classic + blueberry + walnut;
+  var flavors = getFlavorQuantities(data);
+
+  var classic = flavors["classic"] || 0;
+  var blueberry = flavors["blueberry"] || 0;
+  var walnut = flavors["walnut"] || 0;
+  var coconut = flavors["coconut-walnut"] || 0;
+  var doubleChoc = flavors["double-chocolate"] || 0;
+  var raspberry = flavors["raspberry-white-choc"] || 0;
+  var total = classic + blueberry + walnut + coconut + doubleChoc + raspberry;
+
+  var priceCents = data.priceCents || 4999;
+  var pricePerLoaf = priceCents / 100;
 
   var notes = [];
   if (data.deliveryDate) notes.push("Delivery: " + data.deliveryDate);
@@ -173,14 +220,18 @@ function writePreorder(sheet, data) {
     data.email || "",
     "",
     "Online",
+    data.orderNumber || "",
     classic,
     blueberry,
     walnut,
+    coconut,
+    doubleChoc,
+    raspberry,
     total,
-    "",                          // Price/Loaf — blank for delivery, edit if needed
+    pricePerLoaf,
     "",                          // Revenue — formula set below
     "One-time",
-    "New",
+    data.status || "Confirmed",
     notes.join(" | ")
   ]);
 
@@ -188,10 +239,15 @@ function writePreorder(sheet, data) {
 }
 
 function writeWholesale(sheet, data) {
-  var classic = data.classicQty || 0;
-  var blueberry = data.blueberryQty || 0;
-  var walnut = data.walnutQty || 0;
-  var total = classic + blueberry + walnut;
+  var flavors = getFlavorQuantities(data);
+
+  var classic = flavors["classic"] || 0;
+  var blueberry = flavors["blueberry"] || 0;
+  var walnut = flavors["walnut"] || 0;
+  var coconut = flavors["coconut-walnut"] || 0;
+  var doubleChoc = flavors["double-chocolate"] || 0;
+  var raspberry = flavors["raspberry-white-choc"] || 0;
+  var total = classic + blueberry + walnut + coconut + doubleChoc + raspberry;
 
   var notes = [];
   if (data.specialInstructions) notes.push(data.specialInstructions);
@@ -210,9 +266,13 @@ function writeWholesale(sheet, data) {
     data.email || "",
     data.contactName || "",
     "Online",
+    data.orderNumber || "",
     classic,
     blueberry,
     walnut,
+    coconut,
+    doubleChoc,
+    raspberry,
     total,
     30,                          // Price/Loaf — default $30 for wholesale
     "",                          // Revenue — formula set below
@@ -229,7 +289,7 @@ function writeWholesale(sheet, data) {
 
 function setRevenueFormula(sheet, row) {
   // Revenue = Total Loaves × Price/Loaf (blank if no price set)
-  var formula = '=IF(M' + row + '="","",L' + row + '*M' + row + ')';
+  var formula = '=IF(Q' + row + '="","",P' + row + '*Q' + row + ')';
   sheet.getRange(row, COL_REVENUE).setFormula(formula);
 }
 

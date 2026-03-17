@@ -7,33 +7,60 @@ export const NAV_LINKS = [
   { label: "Order", href: "#order" },
 ];
 
-export const PRODUCTS: Product[] = [
+export const PLACEHOLDER_IMAGE = "/images/placeholder-loaf.svg";
+
+/** Fallback products when Supabase is unavailable (original 3 flavors) */
+export const FALLBACK_PRODUCTS: Product[] = [
   {
     id: "classic",
     name: "Classic Chocolate Chip",
+    slug: "classic",
+    priceCents: 4999,
+    wholesalePriceCents: 2999,
     calories: 290,
+    proteinGrams: 12,
     allergens: ["Milk", "Eggs", "Wheat", "Soy"],
+    description: "Our original protein-packed banana bread with premium chocolate chips.",
     image: "/images/classic-chocolate-chip.png",
     accentColor: "#F0C75E",
     stripeColor: "#F0C75E",
+    inventoryRemaining: null,
+    isActive: true,
+    sortOrder: 1,
   },
   {
     id: "blueberry",
     name: "Blueberry Chocolate Chip",
+    slug: "blueberry",
+    priceCents: 4999,
+    wholesalePriceCents: 2999,
     calories: 320,
+    proteinGrams: 12,
     allergens: ["Milk", "Eggs", "Wheat", "Soy"],
+    description: "Wild blueberries meet rich chocolate chips in our most popular flavor.",
     image: "/images/blueberry-chocolate-chip.png",
     accentColor: "#B8A0CC",
     stripeColor: "#3B4D7A",
+    inventoryRemaining: null,
+    isActive: true,
+    sortOrder: 2,
   },
   {
     id: "walnut",
     name: "Walnut Chocolate Chip",
+    slug: "walnut",
+    priceCents: 4999,
+    wholesalePriceCents: 2999,
     calories: 340,
+    proteinGrams: 12,
     allergens: ["Milk", "Eggs", "Wheat", "Soy", "Tree Nuts"],
+    description: "Crunchy walnuts paired with chocolate chips for the ultimate texture.",
     image: "/images/walnut-chocolate-chip.png",
     accentColor: "#9CB5A0",
     stripeColor: "#9CB5A0",
+    inventoryRemaining: null,
+    isActive: true,
+    sortOrder: 3,
   },
 ];
 

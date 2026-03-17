@@ -1,7 +1,9 @@
-import { PRODUCTS } from "@/lib/constants";
+import { getProducts } from "@/lib/products";
 import { ProductCard } from "@/components/ProductCard";
 
-export function Products() {
+export async function Products() {
+  const products = await getProducts();
+
   return (
     <section id="products" className="py-20 px-6 bg-cream">
       <div className="max-w-6xl mx-auto">
@@ -11,8 +13,8 @@ export function Products() {
         <p className="text-center text-navy/60 mb-12">
           12g of protein in every serving. Baked fresh in NYC.
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PRODUCTS.map((product) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
