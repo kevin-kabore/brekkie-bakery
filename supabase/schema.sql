@@ -233,7 +233,7 @@ values
     5
   ),
   (
-    'Raspberry & White Choc',
+    'Raspberry & White Chocolate',
     'raspberry-white-choc',
     4999, 2999,
     '/images/loaves/raspberry-white-choc_1.jpg',

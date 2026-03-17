@@ -15,7 +15,7 @@ export function Products({ products }: ProductsProps) {
           Our Flavors
         </h2>
         <p className="text-center text-navy/60 mb-12">
-          12g of protein in every serving. Baked fresh in NYC.
+          12g of protein per slice. 12 slices per loaf. Baked fresh in NYC.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (

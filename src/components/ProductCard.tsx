@@ -29,7 +29,10 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         <p className="text-navy/50 text-sm">
-          {product.proteinGrams}g Protein &middot; {product.calories} cal
+          {product.proteinGrams}g Protein &middot; {product.calories} cal per slice
+        </p>
+        <p className="text-navy/40 text-xs">
+          12 slices per loaf
         </p>
 
         <div className="flex flex-wrap gap-1 mt-2 mb-4">
