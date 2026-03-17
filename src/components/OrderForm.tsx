@@ -33,6 +33,57 @@ const businessTypeOptions = BUSINESS_TYPES.map((type) => ({
   label: type,
 }));
 
+// ── Step indicator ─────────────────────────────────────
+function StepIndicator({ step, labels }: { step: number; labels: [string, string] }) {
+  return (
+    <div className="flex items-center gap-3 mb-6">
+      {labels.map((label, i) => {
+        const stepNum = i + 1;
+        const isActive = step === stepNum;
+        const isCompleted = step > stepNum;
+        return (
+          <div key={label} className="flex items-center gap-3 flex-1">
+            {i > 0 && (
+              <div
+                className={`h-px flex-1 transition-colors ${
+                  isCompleted || isActive ? "bg-coral" : "bg-navy/15"
+                }`}
+              />
+            )}
+            <div className="flex items-center gap-2 shrink-0">
+              <div
+                className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                  isActive
+                    ? "bg-coral text-cream"
+                    : isCompleted
+                      ? "bg-coral/20 text-coral"
+                      : "bg-navy/10 text-navy/40"
+                }`}
+              >
+                {isCompleted ? (
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="2 6 5 9 10 3" />
+                  </svg>
+                ) : (
+                  stepNum
+                )}
+              </div>
+              <span
+                className={`text-sm font-medium transition-colors ${
+                  isActive ? "text-navy" : isCompleted ? "text-navy/60" : "text-navy/40"
+                }`}
+              >
+                {label}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Main component ─────────────────────────────────────
 interface OrderFormProps {
   defaultTab?: TabType;
   settings: Settings;
@@ -42,6 +93,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
   const { items, totalQuantity, totalCents, clear } = useCart();
 
   const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
+  const [step, setStep] = useState(1);
   const [deliveryData, setDeliveryData] = useState<Omit<DeliveryFormData, "items">>({
     name: "",
     email: "",
@@ -77,14 +129,40 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
     setWholesaleData((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setFormError("");
+  // ── Step 1 validation ──────────────────────────────
+  function canContinue(): boolean {
+    if (totalQuantity === 0) return false;
+    if (activeTab === "preorder") {
+      return !!(deliveryData.name && deliveryData.email && deliveryData.phone);
+    }
+    return !!(
+      wholesaleData.businessName &&
+      wholesaleData.contactName &&
+      wholesaleData.email &&
+      wholesaleData.phone &&
+      wholesaleData.businessType
+    );
+  }
 
+  function handleContinue() {
+    setFormError("");
     if (totalQuantity === 0) {
       setFormError("Please add items to your cart first.");
       return;
     }
+    if (!canContinue()) {
+      setFormError("Please fill in all required fields.");
+      return;
+    }
+    setStep(2);
+    // Scroll form back into view
+    document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  // ── Submit ─────────────────────────────────────────
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setFormError("");
 
     if (activeTab === "preorder" && !settings.preordersOpen) {
       setFormError("Preorders are currently closed. Check back soon!");
@@ -146,6 +224,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
         clear();
         setTimeout(() => {
           setSubmitState("idle");
+          setStep(1);
           setWholesaleData({
             businessName: "",
             contactName: "",
@@ -163,6 +242,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
     }
   }
 
+  // ── Terminal states ────────────────────────────────
   if (submitState === "success") {
     return (
       <div className="bg-white rounded-2xl shadow-lg max-w-2xl mx-auto">
@@ -184,10 +264,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
         <div className="bg-red-50 rounded-xl p-4 text-center">
           <p className="text-red-800 font-semibold mb-3">
             Something went wrong. Please try again or email{" "}
-            <a
-              href="mailto:zach@brekkiebakery.com"
-              className="underline"
-            >
+            <a href="mailto:zach@brekkiebakery.com" className="underline">
               zach@brekkiebakery.com
             </a>
           </p>
@@ -206,13 +283,19 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
   const preordersClosed = !settings.preordersOpen && activeTab === "preorder";
   const isWholesale = activeTab === "wholesale";
 
+  const stepLabels: [string, string] = isWholesale
+    ? ["Business Info", "Delivery Details"]
+    : ["Your Info", "Delivery Details"];
+
   return (
     <div className="max-w-2xl mx-auto">
+      {/* Tabs */}
       <div className="flex">
         <button
           type="button"
           onClick={() => {
             setActiveTab("preorder");
+            setStep(1);
             setFormError("");
           }}
           className={
@@ -227,6 +310,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
           type="button"
           onClick={() => {
             setActiveTab("wholesale");
+            setStep(1);
             setFormError("");
           }}
           className={
@@ -239,6 +323,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
         </button>
       </div>
 
+      {/* Form card */}
       <div className="bg-white rounded-2xl rounded-tl-none shadow-lg p-6 md:p-8">
         {preordersClosed ? (
           <div className="text-center py-8">
@@ -247,162 +332,223 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            {/* Cart summary at top */}
-            <CartSummary
-              hidePrices={isWholesale}
-              maxQty={isWholesale ? 100 : 20}
-            />
+          <>
+            <StepIndicator step={step} labels={stepLabels} />
 
-            {activeTab === "preorder" ? (
-              <>
-                <Input
-                  label="Name"
-                  type="text"
-                  required
-                  autoComplete="name"
-                  value={deliveryData.name}
-                  onChange={(e) => updateDelivery("name", e.target.value)}
-                />
-                <Input
-                  label="Email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  value={deliveryData.email}
-                  onChange={(e) => updateDelivery("email", e.target.value)}
-                />
-                <Input
-                  label="Phone"
-                  type="tel"
-                  required
-                  autoComplete="tel"
-                  value={deliveryData.phone}
-                  onChange={(e) => updateDelivery("phone", e.target.value)}
+            {/* ─── STEP 1: Cart + Contact ─── */}
+            {step === 1 && (
+              <div className="flex flex-col gap-5">
+                <CartSummary
+                  hidePrices={isWholesale}
+                  maxQty={isWholesale ? 100 : 20}
                 />
 
-                <AddressInput
-                  value={deliveryData.address}
-                  onChange={(addr) => updateDelivery("address", addr)}
-                  prefix="shipping "
-                />
+                {activeTab === "preorder" ? (
+                  <>
+                    <div className="border-t border-navy/10 pt-5">
+                      <h3 className="font-display text-base text-navy mb-4">Contact Information</h3>
+                      <div className="flex flex-col gap-4">
+                        <Input
+                          label="Name"
+                          type="text"
+                          required
+                          autoComplete="name"
+                          value={deliveryData.name}
+                          onChange={(e) => updateDelivery("name", e.target.value)}
+                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Input
+                            label="Email"
+                            type="email"
+                            required
+                            autoComplete="email"
+                            value={deliveryData.email}
+                            onChange={(e) => updateDelivery("email", e.target.value)}
+                          />
+                          <Input
+                            label="Phone"
+                            type="tel"
+                            required
+                            autoComplete="tel"
+                            value={deliveryData.phone}
+                            onChange={(e) => updateDelivery("phone", e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="border-t border-navy/10 pt-5">
+                      <h3 className="font-display text-base text-navy mb-4">Business Information</h3>
+                      <div className="flex flex-col gap-4">
+                        <Input
+                          label="Business Name"
+                          type="text"
+                          required
+                          autoComplete="organization"
+                          value={wholesaleData.businessName}
+                          onChange={(e) => updateWholesale("businessName", e.target.value)}
+                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Input
+                            label="Contact Name"
+                            type="text"
+                            required
+                            autoComplete="name"
+                            value={wholesaleData.contactName}
+                            onChange={(e) => updateWholesale("contactName", e.target.value)}
+                          />
+                          <Select
+                            label="Business Type"
+                            required
+                            options={businessTypeOptions}
+                            value={wholesaleData.businessType}
+                            onChange={(e) => updateWholesale("businessType", e.target.value)}
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Input
+                            label="Email"
+                            type="email"
+                            required
+                            autoComplete="email"
+                            value={wholesaleData.email}
+                            onChange={(e) => updateWholesale("email", e.target.value)}
+                          />
+                          <Input
+                            label="Phone"
+                            type="tel"
+                            required
+                            autoComplete="tel"
+                            value={wholesaleData.phone}
+                            onChange={(e) => updateWholesale("phone", e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
 
-                <Input
-                  label="Preferred Delivery Date"
-                  type="date"
-                  required
-                  min={getTomorrowDate()}
-                  value={deliveryData.deliveryDate}
-                  onChange={(e) => updateDelivery("deliveryDate", e.target.value)}
-                />
-                <Textarea
-                  label="Special Instructions"
-                  placeholder="Buzzer code, leave at door, dietary notes, etc."
-                  value={deliveryData.specialInstructions}
-                  onChange={(e) =>
-                    updateDelivery("specialInstructions", e.target.value)
-                  }
-                />
-              </>
-            ) : (
-              <>
-                <Input
-                  label="Business Name"
-                  type="text"
-                  required
-                  autoComplete="organization"
-                  value={wholesaleData.businessName}
-                  onChange={(e) =>
-                    updateWholesale("businessName", e.target.value)
-                  }
-                />
-                <Input
-                  label="Contact Name"
-                  type="text"
-                  required
-                  autoComplete="name"
-                  value={wholesaleData.contactName}
-                  onChange={(e) =>
-                    updateWholesale("contactName", e.target.value)
-                  }
-                />
-                <Input
-                  label="Email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  value={wholesaleData.email}
-                  onChange={(e) => updateWholesale("email", e.target.value)}
-                />
-                <Input
-                  label="Phone"
-                  type="tel"
-                  required
-                  autoComplete="tel"
-                  value={wholesaleData.phone}
-                  onChange={(e) => updateWholesale("phone", e.target.value)}
-                />
-                <Select
-                  label="Business Type"
-                  required
-                  options={businessTypeOptions}
-                  value={wholesaleData.businessType}
-                  onChange={(e) =>
-                    updateWholesale("businessType", e.target.value)
-                  }
-                />
+                {formError && (
+                  <p className="text-sm text-red-500 text-center">{formError}</p>
+                )}
 
-                <AddressInput
-                  value={wholesaleData.address}
-                  onChange={(addr) => updateWholesale("address", addr)}
-                  prefix="billing "
-                />
-
-                <Select
-                  label="Order Frequency"
-                  required
-                  options={FREQUENCIES}
-                  value={wholesaleData.frequency}
-                  onChange={(e) =>
-                    updateWholesale(
-                      "frequency",
-                      e.target.value as WholesaleFormData["frequency"]
-                    )
-                  }
-                />
-                <Textarea
-                  label="Special Instructions"
-                  placeholder="Any special requirements or notes..."
-                  value={wholesaleData.specialInstructions}
-                  onChange={(e) =>
-                    updateWholesale("specialInstructions", e.target.value)
-                  }
-                />
-              </>
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                  disabled={totalQuantity === 0}
+                  onClick={handleContinue}
+                >
+                  {totalQuantity === 0 ? "Add items to continue" : "Continue to Delivery"}
+                </Button>
+              </div>
             )}
 
-            {formError && (
-              <p className="text-sm text-red-500 text-center">{formError}</p>
-            )}
+            {/* ─── STEP 2: Delivery + Submit ─── */}
+            {step === 2 && (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                {/* Compact order summary */}
+                <div className="rounded-lg bg-cream/50 border border-navy/10 px-4 py-3 flex items-center justify-between">
+                  <span className="text-sm text-navy/60">
+                    {totalQuantity} {totalQuantity === 1 ? "loaf" : "loaves"}
+                    {!isWholesale && <> &mdash; ${(totalCents / 100).toFixed(2)}</>}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="text-sm text-coral font-medium hover:underline cursor-pointer"
+                  >
+                    Edit order
+                  </button>
+                </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              className="w-full"
-              disabled={submitState === "submitting" || totalQuantity === 0}
-            >
-              {submitState === "submitting"
-                ? "Processing..."
-                : activeTab === "preorder"
-                  ? totalCents > 0
-                    ? `Checkout — $${(totalCents / 100).toFixed(2)}`
-                    : "Add items to continue"
-                  : totalQuantity > 0
-                    ? "Submit Inquiry"
-                    : "Add items to continue"}
-            </Button>
-          </form>
+                <h3 className="font-display text-base text-navy">Delivery Details</h3>
+
+                {activeTab === "preorder" ? (
+                  <div className="flex flex-col gap-4">
+                    <AddressInput
+                      value={deliveryData.address}
+                      onChange={(addr) => updateDelivery("address", addr)}
+                      prefix="shipping "
+                    />
+                    <Input
+                      label="Preferred Delivery Date"
+                      type="date"
+                      required
+                      min={getTomorrowDate()}
+                      value={deliveryData.deliveryDate}
+                      onChange={(e) => updateDelivery("deliveryDate", e.target.value)}
+                    />
+                    <Textarea
+                      label="Special Instructions"
+                      placeholder="Buzzer code, leave at door, dietary notes, etc."
+                      value={deliveryData.specialInstructions}
+                      onChange={(e) => updateDelivery("specialInstructions", e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    <AddressInput
+                      value={wholesaleData.address}
+                      onChange={(addr) => updateWholesale("address", addr)}
+                      prefix="billing "
+                    />
+                    <Select
+                      label="Order Frequency"
+                      required
+                      options={FREQUENCIES}
+                      value={wholesaleData.frequency}
+                      onChange={(e) =>
+                        updateWholesale(
+                          "frequency",
+                          e.target.value as WholesaleFormData["frequency"]
+                        )
+                      }
+                    />
+                    <Textarea
+                      label="Special Instructions"
+                      placeholder="Any special requirements or notes..."
+                      value={wholesaleData.specialInstructions}
+                      onChange={(e) => updateWholesale("specialInstructions", e.target.value)}
+                    />
+                  </div>
+                )}
+
+                {formError && (
+                  <p className="text-sm text-red-500 text-center">{formError}</p>
+                )}
+
+                <div className="flex flex-col gap-3">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    className="w-full"
+                    disabled={submitState === "submitting"}
+                  >
+                    {submitState === "submitting"
+                      ? "Processing..."
+                      : activeTab === "preorder"
+                        ? `Checkout — $${(totalCents / 100).toFixed(2)}`
+                        : "Submit Inquiry"}
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep(1);
+                      setFormError("");
+                    }}
+                    className="text-sm text-navy/50 hover:text-navy transition-colors cursor-pointer text-center"
+                  >
+                    &larr; Back
+                  </button>
+                </div>
+              </form>
+            )}
+          </>
         )}
       </div>
     </div>

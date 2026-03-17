@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import type { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { QuantityStepper } from "@/components/QuantityStepper";
+import { ImageCarousel } from "@/components/ImageCarousel";
 import { getProductImages } from "@/lib/images";
 
 interface ProductCardProps {
@@ -17,24 +17,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const images = getProductImages(product.slug);
 
   return (
-    <div className="group rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-white">
-      {/* Image with hover crossfade */}
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <Image
-          src={images.hero}
-          alt={`${product.name} banana bread`}
-          fill
-          className="object-cover transition-opacity duration-500"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-        <Image
-          src={images.sliced}
-          alt={`${product.name} sliced`}
-          fill
-          className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-      </div>
+    <div className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-white">
+      <ImageCarousel images={images.carousel} alt={`${product.name} banana bread`} />
 
       <div className="p-5">
         <div className="flex items-start justify-between gap-2 mb-1">
