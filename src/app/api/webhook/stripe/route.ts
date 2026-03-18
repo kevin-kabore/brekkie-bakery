@@ -126,7 +126,7 @@ async function handleCheckoutCompleted(
           deliveryDate: meta.delivery_date,
           specialInstructions: meta.special_instructions,
           orderNumber: meta.order_number,
-          priceCents: orderItems[0]?.priceCents ?? 4999,
+          totalCents: session.amount_total ?? 0,
           status: "Confirmed",
           flavorQuantities,
           submittedAt: new Date().toISOString(),

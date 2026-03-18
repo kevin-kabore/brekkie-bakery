@@ -202,8 +202,15 @@ function writePreorder(sheet, data) {
   var raspberry = flavors["raspberry-white-choc"] || 0;
   var total = classic + blueberry + walnut + coconut + doubleChoc + raspberry;
 
-  var priceCents = data.priceCents || 4999;
-  var pricePerLoaf = priceCents / 100;
+  // Calculate price per loaf from total or use legacy field
+  var pricePerLoaf;
+  if (data.totalCents && total > 0) {
+    pricePerLoaf = (data.totalCents / 100) / total;
+  } else if (data.priceCents) {
+    pricePerLoaf = data.priceCents / 100;
+  } else {
+    pricePerLoaf = 38.50; // default
+  }
 
   var notes = [];
   if (data.deliveryDate) notes.push("Delivery: " + data.deliveryDate);
