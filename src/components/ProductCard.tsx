@@ -5,7 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { QuantityStepper } from "@/components/QuantityStepper";
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { getProductImages } from "@/lib/images";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Award } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -24,7 +24,15 @@ export function ProductCard({ product }: ProductCardProps) {
         style={{ backgroundColor: product.accentColor }}
       />
 
-      <ImageCarousel images={images.carousel} alt={`${product.name} banana bread`} />
+      <div className="relative">
+        <ImageCarousel images={images.carousel} alt={`${product.name} banana bread`} />
+        {product.isBestSeller && (
+          <div className="absolute top-3 left-3 z-10 flex items-center gap-1 bg-golden text-espresso text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+            <Award size={14} />
+            Best Seller
+          </div>
+        )}
+      </div>
 
       <div className="p-6">
         <div className="flex items-start justify-between gap-2 mb-1">
@@ -38,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.proteinGrams}g Protein &middot; {product.calories} cal per slice
         </p>
         <p className="text-espresso/40 text-xs">
-          12 slices per loaf
+          12 slices per loaf &middot; Free delivery
         </p>
 
         <div className="flex flex-wrap gap-1 mt-2 mb-4">

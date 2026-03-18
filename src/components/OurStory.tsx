@@ -31,10 +31,10 @@ export function OurStory() {
           </p>
           <p>
             So we started baking. Batch after batch, we refined our recipe until
-            we landed on something special &mdash; a banana bread that&apos;s
-            rich, moist, and packed with 12 grams of protein. No artificial
-            anything. Just real ingredients, real flavor, and a real good reason
-            to look forward to breakfast.
+            we landed on something special. A banana bread that&apos;s rich,
+            moist, and packed with 12 grams of protein. No artificial anything.
+            Just real ingredients, real flavor, and a real good reason to look
+            forward to breakfast.
           </p>
         </div>
         <p className="font-accent text-3xl md:text-4xl text-crust mt-12">

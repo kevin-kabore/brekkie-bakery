@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Brekkie | Protein Banana Bread",
     description: "Sweet enough for dessert. Smart enough for breakfast.",
-    url: "https://brekkiebakery.com",
+    url: "https://www.brekkiebakery.com",
     siteName: "Brekkie",
     type: "website",
   },

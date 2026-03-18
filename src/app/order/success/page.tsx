@@ -18,7 +18,8 @@ export default async function OrderSuccessPage({ searchParams }: SuccessPageProp
     session = await getStripe().checkout.sessions.retrieve(session_id, {
       expand: ["line_items"],
     });
-  } catch {
+  } catch (err) {
+    console.error("Failed to retrieve Stripe session:", err);
     redirect("/");
   }
 

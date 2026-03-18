@@ -110,13 +110,27 @@ export async function POST(request: NextRequest) {
       quantity: li.qty,
     }));
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    // Use request origin for redirect URLs so it works in both local dev and production
+    const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
     const session = await getStripe().checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       customer_email: body.email,
       line_items: stripeLineItems,
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            display_name: "Free Delivery",
+            type: "fixed_amount",
+            fixed_amount: { amount: 0, currency: "usd" },
+            delivery_estimate: {
+              minimum: { unit: "business_day", value: 2 },
+              maximum: { unit: "business_day", value: 5 },
+            },
+          },
+        },
+      ],
       metadata: {
         order_number: orderNumber,
         customer_name: body.name,
@@ -129,8 +143,8 @@ export async function POST(request: NextRequest) {
         total_qty: String(totalQty),
       },
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minutes
-      success_url: `${appUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/#order`,
+      success_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/#order`,
     });
 
     return NextResponse.json({ url: session.url });

@@ -18,6 +18,7 @@ function toProduct(row: DbProduct): Product {
     stripeColor: row.stripe_color,
     inventoryRemaining: row.inventory_remaining,
     isActive: row.is_active,
+    isBestSeller: row.is_best_seller,
     sortOrder: row.sort_order,
   };
 }

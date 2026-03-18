@@ -14,18 +14,19 @@ create table if not exists products (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   slug text not null unique,
-  price_cents integer not null default 4999,
-  wholesale_price_cents integer not null default 2999,
+  price_cents integer not null default 3850,
+  wholesale_price_cents integer not null default 2500,
   image_url text,
   calories integer not null default 0,
   protein_grams integer not null default 12,
   allergens text[] not null default '{}',
   description text not null default '',
-  accent_color text not null default '#F0C75E',
-  stripe_color text not null default '#F0C75E',
+  accent_color text not null default '#E8B44C',
+  stripe_color text not null default '#E8B44C',
   inventory_remaining integer,
   max_inventory integer,
   is_active boolean not null default true,
+  is_best_seller boolean not null default false,
   sort_order integer not null default 0,
   created_at timestamptz not null default now()
 );
@@ -175,72 +176,72 @@ create policy "Settings are viewable by everyone"
 -- ============================================================
 -- SEED DATA: 6 products
 -- ============================================================
-insert into products (name, slug, price_cents, wholesale_price_cents, image_url, calories, protein_grams, allergens, description, accent_color, stripe_color, sort_order)
+insert into products (name, slug, price_cents, wholesale_price_cents, image_url, calories, protein_grams, allergens, description, accent_color, stripe_color, is_best_seller, sort_order)
 values
   (
     'Classic Chocolate Chip',
     'classic',
-    4999, 2999,
+    3850, 2500,
     '/images/loaves/classic_1.jpg',
     290, 12,
     array['Milk', 'Eggs', 'Wheat', 'Soy'],
     'Our original protein-packed banana bread with premium chocolate chips.',
-    '#F0C75E', '#F0C75E',
-    1
+    '#E8B44C', '#E8B44C',
+    false, 1
   ),
   (
     'Blueberry Chocolate Chip',
     'blueberry',
-    4999, 2999,
+    3950, 2600,
     '/images/loaves/blueberry_1.jpg',
     320, 12,
     array['Milk', 'Eggs', 'Wheat', 'Soy'],
-    'Wild blueberries meet rich chocolate chips in our most popular flavor.',
-    '#B8A0CC', '#3B4D7A',
-    2
+    'Dried blueberries meet rich chocolate chips in our most popular flavor.',
+    '#8FA882', '#8FA882',
+    false, 2
   ),
   (
     'Walnut Chocolate Chip',
     'walnut',
-    4999, 2999,
+    3999, 2600,
     '/images/loaves/walnut_1.jpg',
     340, 12,
     array['Milk', 'Eggs', 'Wheat', 'Soy', 'Tree Nuts'],
     'Crunchy walnuts paired with chocolate chips for the ultimate texture.',
-    '#9CB5A0', '#9CB5A0',
-    3
+    '#C8703E', '#C8703E',
+    false, 3
   ),
   (
-    'Coconut Walnut',
+    'Coconut Walnut Chocolate Chip',
     'coconut-walnut',
-    4999, 2999,
+    4199, 2800,
     '/images/loaves/coconut-walnut_1.jpg',
-    330, 12,
+    350, 12,
     array['Milk', 'Eggs', 'Wheat', 'Soy', 'Tree Nuts', 'Coconut'],
-    'Tropical coconut flakes with crunchy walnuts. A new island-inspired twist.',
-    '#E8D5B7', '#E8D5B7',
-    4
+    'Toasted coconut and walnuts with chocolate chips for a tropical twist.',
+    '#E8B44C', '#E8B44C',
+    true, 4
   ),
   (
-    'Double Chocolate',
+    'Double Chocolate Chocolate Chip',
     'double-chocolate',
-    4999, 2999,
+    4199, 2800,
     '/images/loaves/double-chocolate_1.jpg',
+    330, 12,
+    array['Milk', 'Eggs', 'Wheat', 'Soy'],
+    'Rich cocoa banana bread loaded with chocolate chips for the ultimate chocolate lover.',
+    '#4A3428', '#4A3428',
+    true, 5
+  ),
+  (
+    'Raspberry White Chocolate',
+    'raspberry-white-choc',
+    4199, 2800,
+    '/images/loaves/raspberry-white-choc_1.jpg',
     310, 12,
     array['Milk', 'Eggs', 'Wheat', 'Soy'],
-    'For the serious chocolate lover — cocoa banana bread loaded with chocolate chips.',
-    '#8B6F5E', '#5C4033',
-    5
-  ),
-  (
-    'Raspberry & White Chocolate',
-    'raspberry-white-choc',
-    4999, 2999,
-    '/images/loaves/raspberry-white-choc_1.jpg',
-    300, 12,
-    array['Milk', 'Eggs', 'Wheat', 'Soy'],
-    'Tart raspberries with creamy white chocolate. Our brightest flavor yet.',
-    '#E8A0B4', '#C4587A',
-    6
+    'Tart raspberries swirled with creamy white chocolate for a bright, indulgent loaf.',
+    '#C85A7C', '#C85A7C',
+    false, 6
   )
 on conflict (slug) do nothing;

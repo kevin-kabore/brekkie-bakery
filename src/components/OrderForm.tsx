@@ -14,10 +14,10 @@ import type { AddressData, DeliveryFormData, Settings, WholesaleFormData } from 
 export type TabType = "preorder" | "wholesale";
 type SubmitState = "idle" | "submitting" | "success" | "error";
 
-function getTomorrowDate(): string {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  return tomorrow.toISOString().split("T")[0];
+function getDatePlusDays(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split("T")[0];
 }
 
 const emptyAddress: AddressData = {
@@ -98,7 +98,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
     name: "",
     email: "",
     phone: "",
-    deliveryDate: "",
+    deliveryDate: getDatePlusDays(2),
     address: { ...emptyAddress },
     specialInstructions: "",
   });
@@ -478,7 +478,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
                       label="Preferred Delivery Date"
                       type="date"
                       required
-                      min={getTomorrowDate()}
+                      min={getDatePlusDays(2)}
                       value={deliveryData.deliveryDate}
                       onChange={(e) => updateDelivery("deliveryDate", e.target.value)}
                     />

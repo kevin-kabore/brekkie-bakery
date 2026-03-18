@@ -14,6 +14,7 @@ export interface Product {
   inventoryRemaining: number | null;
   isActive: boolean;
   sortOrder: number;
+  isBestSeller?: boolean;
 }
 
 /** Row shape from Supabase `products` table */
@@ -32,6 +33,7 @@ export interface DbProduct {
   inventory_remaining: number | null;
   max_inventory: number | null;
   is_active: boolean;
+  is_best_seller: boolean;
   sort_order: number;
   description: string;
 }
