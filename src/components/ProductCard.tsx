@@ -4,7 +4,7 @@ import type { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { QuantityStepper } from "@/components/QuantityStepper";
 import { ImageCarousel } from "@/components/ImageCarousel";
-import { getProductImages } from "@/lib/images";
+import { getProductImages, getCrossSectionPosition } from "@/lib/images";
 import { ShoppingBag, Award } from "lucide-react";
 
 interface ProductCardProps {
@@ -16,16 +16,18 @@ export function ProductCard({ product }: ProductCardProps) {
   const qty = items[product.id] || 0;
   const priceDisplay = `$${(product.priceCents / 100).toFixed(2)}`;
   const images = getProductImages(product.slug);
+  // Only the cross-section image (index 2) needs custom positioning
+  const positions = [undefined, undefined, getCrossSectionPosition(product.slug)];
 
   return (
-    <div className="group rounded-2xl overflow-hidden bg-white border border-stone/80 hover:border-crust/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <div className="group flex flex-col rounded-2xl overflow-hidden bg-white border border-stone/80 hover:border-crust/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       <div
         className="h-[3px]"
         style={{ backgroundColor: product.accentColor }}
       />
 
       <div className="relative">
-        <ImageCarousel images={images.carousel} alt={`${product.name} banana bread`} />
+        <ImageCarousel images={images.carousel} alt={`${product.name} banana bread`} positions={positions} />
         {product.isBestSeller && (
           <div className="absolute top-3 left-3 z-10 flex items-center gap-1 bg-golden text-espresso text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
             <Award size={14} />
@@ -34,8 +36,8 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
 
-      <div className="p-6">
-        <div className="flex items-start justify-between gap-2 mb-1">
+      <div className="flex flex-col flex-1 p-6">
+        <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-display text-xl text-espresso">{product.name}</h3>
           <span className="shrink-0 text-crust font-semibold text-lg">
             {priceDisplay}
@@ -49,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
           12 slices per loaf &middot; Free delivery
         </p>
 
-        <div className="flex flex-wrap gap-1 mt-2 mb-4">
+        <div className="flex flex-wrap gap-1 mt-3">
           {product.allergens.map((allergen) => (
             <span
               key={allergen}
@@ -60,24 +62,26 @@ export function ProductCard({ product }: ProductCardProps) {
           ))}
         </div>
 
-        {qty === 0 ? (
-          <button
-            type="button"
-            onClick={() => increment(product.id)}
-            className="w-full bg-crust hover:bg-crust-light text-cream font-semibold py-3 rounded-full transition-all cursor-pointer text-sm flex items-center justify-center gap-2"
-          >
-            <ShoppingBag size={16} />
-            Add to Cart
-          </button>
-        ) : (
-          <div className="flex justify-center">
-            <QuantityStepper
-              quantity={qty}
-              onIncrement={() => increment(product.id)}
-              onDecrement={() => decrement(product.id)}
-            />
-          </div>
-        )}
+        <div className="mt-auto pt-5">
+          {qty === 0 ? (
+            <button
+              type="button"
+              onClick={() => increment(product.id)}
+              className="w-full bg-crust hover:bg-crust-light text-cream font-semibold py-3 rounded-full transition-all cursor-pointer text-sm flex items-center justify-center gap-2"
+            >
+              <ShoppingBag size={16} />
+              Add to Cart
+            </button>
+          ) : (
+            <div className="flex justify-center">
+              <QuantityStepper
+                quantity={qty}
+                onIncrement={() => increment(product.id)}
+                onDecrement={() => decrement(product.id)}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

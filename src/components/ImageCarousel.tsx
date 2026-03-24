@@ -6,9 +6,11 @@ import Image from "next/image";
 interface ImageCarouselProps {
   images: string[];
   alt: string;
+  /** Optional per-index object-position overrides (default: "center center") */
+  positions?: (string | undefined)[];
 }
 
-export function ImageCarousel({ images, alt }: ImageCarouselProps) {
+export function ImageCarousel({ images, alt, positions }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
@@ -52,6 +54,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
               alt={`${alt} — photo ${i + 1}`}
               fill
               className="object-cover"
+              style={positions?.[i] ? { objectPosition: positions[i] } : undefined}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               priority={i === 0}
             />
