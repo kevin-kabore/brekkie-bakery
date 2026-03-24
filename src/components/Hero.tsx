@@ -1,67 +1,71 @@
+import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="min-h-screen relative overflow-hidden flex items-center justify-center bg-cream">
-      {/* Radial gradient background */}
+    <section className="min-h-screen relative overflow-hidden flex items-end justify-center bg-espresso">
+      {/* Full-bleed background image */}
+      <Image
+        src="/images/hero.jpg"
+        alt="Fresh-baked protein banana bread loaf"
+        fill
+        priority
+        className="object-cover"
+        sizes="100vw"
+      />
+
+      {/* Warm gradient overlay — heavier at bottom where text lives */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at center, var(--color-cream) 0%, var(--color-cream-dark) 100%)",
+            "linear-gradient(to top, rgba(44, 24, 16, 0.85) 0%, rgba(44, 24, 16, 0.5) 35%, rgba(44, 24, 16, 0.15) 60%, transparent 80%)",
         }}
       />
 
-      {/* Subtle dot pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, var(--color-espresso) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6 gap-6">
-        {/* Top decorative line */}
-        <div className="flex items-center gap-4 text-espresso/20">
-          <span className="block w-16 md:w-24 h-px bg-espresso/20" />
-          <span className="text-espresso/30 text-lg">~</span>
-          <span className="block w-16 md:w-24 h-px bg-espresso/20" />
+      {/* Content — positioned in lower third */}
+      <div className="relative z-10 flex flex-col items-center text-center px-6 gap-5 pb-24 pt-16 animate-[fadeUp_0.8s_ease-out]">
+        {/* Decorative line */}
+        <div className="flex items-center gap-4">
+          <span className="block w-16 md:w-24 h-px bg-cream/30" />
+          <span className="text-cream/40 text-lg">~</span>
+          <span className="block w-16 md:w-24 h-px bg-cream/30" />
         </div>
 
         {/* Accent text */}
-        <p className="font-accent text-crust text-2xl md:text-3xl">
+        <p className="font-accent text-golden text-3xl md:text-4xl drop-shadow-sm">
           Protein Banana Bread
         </p>
 
         {/* Main heading */}
-        <h1 className="font-display text-7xl md:text-9xl text-espresso tracking-tight leading-none">
+        <h1
+          className="font-display text-7xl md:text-9xl text-cream tracking-tight leading-none"
+          style={{ textShadow: "0 2px 16px rgba(0,0,0,0.4)" }}
+        >
           Brekkie
         </h1>
 
         {/* Tagline */}
-        <p className="font-body text-xl md:text-2xl text-espresso/70 italic max-w-lg">
+        <p className="font-body text-xl md:text-2xl text-cream/80 italic max-w-lg">
           Sweet enough for dessert. Smart enough for breakfast.
         </p>
 
-        {/* Bottom decorative line */}
-        <div className="flex items-center gap-4 text-espresso/20">
-          <span className="block w-16 md:w-24 h-px bg-espresso/20" />
-          <span className="text-espresso/30 text-lg">~</span>
-          <span className="block w-16 md:w-24 h-px bg-espresso/20" />
+        {/* Decorative line */}
+        <div className="flex items-center gap-4">
+          <span className="block w-16 md:w-24 h-px bg-cream/30" />
+          <span className="text-cream/40 text-lg">~</span>
+          <span className="block w-16 md:w-24 h-px bg-cream/30" />
         </div>
 
         {/* Location */}
-        <p className="font-body text-sm uppercase tracking-[0.2em] text-espresso/50">
+        <p className="font-body text-sm uppercase tracking-[0.2em] text-cream/50">
           Baked fresh in NYC
         </p>
 
         {/* CTA button */}
         <a
           href="#order"
-          className="group mt-2 inline-flex items-center gap-2 bg-crust hover:bg-crust-light text-cream rounded-full px-8 py-4 text-lg font-semibold transition-colors duration-200"
+          className="group mt-2 inline-flex items-center gap-2 bg-crust hover:bg-crust-light text-cream rounded-full px-8 py-4 text-lg font-semibold transition-colors duration-200 shadow-lg"
         >
           Order Now
           <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
@@ -71,7 +75,7 @@ export function Hero() {
       {/* Scroll indicator */}
       <a
         href="#products"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-espresso/30 hover:text-espresso/60 transition-colors duration-200 cursor-pointer"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-cream/40 hover:text-cream/70 transition-colors duration-200 cursor-pointer z-10"
         aria-label="Scroll to products"
       >
         <ChevronDown className="w-6 h-6" />
