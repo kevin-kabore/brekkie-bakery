@@ -14,7 +14,7 @@ export function Hero() {
         sizes="100vw"
       />
       <Image
-        src="/images/hero-v3-coconut-v2.jpg"
+        src="/images/hero-coconut-final.jpg"
         alt="Fresh-baked coconut walnut protein banana bread loaf"
         fill
         priority
