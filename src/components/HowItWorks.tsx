@@ -18,9 +18,9 @@ const STEPS = [
   },
   {
     Icon: Truck,
-    title: "Delivered to You",
+    title: "Shipped to You",
     description:
-      "Fresh banana bread arrives at your door across NYC.",
+      "Fresh banana bread shipped to your door in 3–5 business days.",
   },
 ];
 

@@ -4,13 +4,21 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 export function Hero() {
   return (
     <section className="min-h-screen relative overflow-hidden flex items-end justify-center bg-espresso">
-      {/* Full-bleed background image */}
+      {/* Full-bleed background image — vertical crop on mobile, landscape on desktop */}
       <Image
-        src="/images/hero.jpg"
+        src="/images/hero-v2.jpg"
         alt="Fresh-baked protein banana bread loaf"
         fill
         priority
-        className="object-cover"
+        className="object-cover md:hidden"
+        sizes="100vw"
+      />
+      <Image
+        src="/images/hero-v3-coconut-v2.jpg"
+        alt="Fresh-baked coconut walnut protein banana bread loaf"
+        fill
+        priority
+        className="object-cover hidden md:block"
         sizes="100vw"
       />
 
@@ -32,11 +40,6 @@ export function Hero() {
           <span className="block w-16 md:w-24 h-px bg-cream/30" />
         </div>
 
-        {/* Accent text */}
-        <p className="font-accent text-golden text-3xl md:text-4xl drop-shadow-sm">
-          Protein Banana Bread
-        </p>
-
         {/* Main heading */}
         <h1
           className="font-display text-7xl md:text-9xl text-cream tracking-tight leading-none"
@@ -44,6 +47,11 @@ export function Hero() {
         >
           Brekkie
         </h1>
+
+        {/* Accent text */}
+        <p className="font-accent text-golden text-3xl md:text-4xl drop-shadow-sm">
+          Protein Banana Bread
+        </p>
 
         {/* Tagline */}
         <p className="font-body text-xl md:text-2xl text-cream/80 italic max-w-lg">

@@ -10,7 +10,7 @@ interface OrderSectionProps {
 }
 
 export function OrderSection({ settings }: OrderSectionProps) {
-  const [defaultTab, setDefaultTab] = useState<TabType>("preorder");
+  const [defaultTab, setDefaultTab] = useState<TabType>("order");
 
   useEffect(() => {
     if (window.location.hash === "#wholesale") {
@@ -28,7 +28,7 @@ export function OrderSection({ settings }: OrderSectionProps) {
           Place Your Order
         </h2>
         <p className="text-center text-espresso/60 mb-12">
-          Preorder for delivery or inquire about wholesale for your business.
+          Order for shipping or inquire about wholesale for your business.
         </p>
         <OrderForm
           defaultTab={defaultTab}

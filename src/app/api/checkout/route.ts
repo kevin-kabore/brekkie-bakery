@@ -121,11 +121,11 @@ export async function POST(request: NextRequest) {
       shipping_options: [
         {
           shipping_rate_data: {
-            display_name: "Free Delivery",
+            display_name: "Standard Shipping",
             type: "fixed_amount",
-            fixed_amount: { amount: 0, currency: "usd" },
+            fixed_amount: { amount: 799, currency: "usd" },
             delivery_estimate: {
-              minimum: { unit: "business_day", value: 2 },
+              minimum: { unit: "business_day", value: 3 },
               maximum: { unit: "business_day", value: 5 },
             },
           },

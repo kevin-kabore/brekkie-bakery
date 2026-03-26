@@ -85,7 +85,7 @@ async function handleCheckoutCompleted(
       typeof session.payment_intent === "string"
         ? session.payment_intent
         : session.payment_intent?.id ?? null,
-    order_type: "preorder",
+    order_type: "order",
     customer_name: meta.customer_name,
     customer_email: session.customer_email ?? "",
     customer_phone: meta.customer_phone,
@@ -118,7 +118,7 @@ async function handleCheckoutCompleted(
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
-          formType: "preorder",
+          formType: "order",
           name: meta.customer_name,
           email: session.customer_email ?? "",
           phone: meta.customer_phone,

@@ -11,7 +11,7 @@ import { useCart } from "@/context/CartContext";
 import { BUSINESS_TYPES, FREQUENCIES } from "@/lib/constants";
 import type { AddressData, DeliveryFormData, Settings, WholesaleFormData } from "@/types";
 
-export type TabType = "preorder" | "wholesale";
+export type TabType = "order" | "wholesale";
 type SubmitState = "idle" | "submitting" | "success" | "error";
 
 function getDatePlusDays(days: number): string {
@@ -89,7 +89,7 @@ interface OrderFormProps {
   settings: Settings;
 }
 
-export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps) {
+export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
   const { items, totalQuantity, totalCents, clear } = useCart();
 
   const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
@@ -132,7 +132,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
   // ── Step 1 validation ──────────────────────────────
   function canContinue(): boolean {
     if (totalQuantity === 0) return false;
-    if (activeTab === "preorder") {
+    if (activeTab === "order") {
       return !!(deliveryData.name && deliveryData.email && deliveryData.phone);
     }
     return !!(
@@ -150,6 +150,10 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
       setFormError("Please add items to your cart first.");
       return;
     }
+    if (activeTab === "wholesale" && totalQuantity < 5) {
+      setFormError("Wholesale orders require a minimum of 5 loaves.");
+      return;
+    }
     if (!canContinue()) {
       setFormError("Please fill in all required fields.");
       return;
@@ -164,15 +168,15 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
     e.preventDefault();
     setFormError("");
 
-    if (activeTab === "preorder" && !settings.preordersOpen) {
-      setFormError("Preorders are currently closed. Check back soon!");
+    if (activeTab === "order" && !settings.preordersOpen) {
+      setFormError("Orders are currently closed. Check back soon!");
       return;
     }
 
     setSubmitState("submitting");
 
     try {
-      if (activeTab === "preorder") {
+      if (activeTab === "order") {
         const payload = {
           name: deliveryData.name,
           email: deliveryData.email,
@@ -264,8 +268,8 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
         <div className="bg-red-50 rounded-xl p-4 text-center">
           <p className="text-red-800 font-semibold mb-3">
             Something went wrong. Please try again or email{" "}
-            <a href="mailto:zach@brekkiebakery.com" className="underline">
-              zach@brekkiebakery.com
+            <a href="mailto:zack@brekkiebakery.com" className="underline">
+              zack@brekkiebakery.com
             </a>
           </p>
           <Button
@@ -280,7 +284,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
     );
   }
 
-  const preordersClosed = !settings.preordersOpen && activeTab === "preorder";
+  const ordersClosed = !settings.preordersOpen && activeTab === "order";
   const isWholesale = activeTab === "wholesale";
 
   const stepLabels: [string, string] = isWholesale
@@ -294,17 +298,17 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
         <button
           type="button"
           onClick={() => {
-            setActiveTab("preorder");
+            setActiveTab("order");
             setStep(1);
             setFormError("");
           }}
           className={
-            activeTab === "preorder"
+            activeTab === "order"
               ? "bg-espresso text-cream rounded-lg px-6 py-3 font-semibold cursor-pointer"
               : "text-espresso/60 hover:text-espresso px-6 py-3 cursor-pointer"
           }
         >
-          Preorder
+          Order
         </button>
         <button
           type="button"
@@ -325,10 +329,10 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
 
       {/* Form card */}
       <div className="bg-white rounded-2xl shadow-sm border border-stone/60 p-6 md:p-8">
-        {preordersClosed ? (
+        {ordersClosed ? (
           <div className="text-center py-8">
             <p className="text-espresso/60 text-lg">
-              Preorders are currently closed. Check back soon!
+              Orders are currently closed. Check back soon!
             </p>
           </div>
         ) : (
@@ -343,7 +347,13 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
                   maxQty={isWholesale ? 100 : 20}
                 />
 
-                {activeTab === "preorder" ? (
+                {isWholesale && (
+                  <p className="text-sm text-espresso/50 text-center -mt-2">
+                    Minimum order: 5 loaves
+                  </p>
+                )}
+
+                {activeTab === "order" ? (
                   <>
                     <div className="border-t border-espresso/10 pt-5">
                       <h3 className="font-display text-base text-espresso mb-4">Contact Information</h3>
@@ -467,7 +477,7 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
 
                 <h3 className="font-display text-base text-espresso">Delivery Details</h3>
 
-                {activeTab === "preorder" ? (
+                {activeTab === "order" ? (
                   <div className="flex flex-col gap-4">
                     <AddressInput
                       value={deliveryData.address}
@@ -531,8 +541,8 @@ export function OrderForm({ defaultTab = "preorder", settings }: OrderFormProps)
                   >
                     {submitState === "submitting"
                       ? "Processing..."
-                      : activeTab === "preorder"
-                        ? `Checkout — $${(totalCents / 100).toFixed(2)}`
+                      : activeTab === "order"
+                        ? `Checkout — $${(totalCents / 100).toFixed(2)} + $7.99 shipping`
                         : "Submit Inquiry"}
                   </Button>
                   <button

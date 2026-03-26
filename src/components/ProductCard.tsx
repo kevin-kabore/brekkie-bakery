@@ -14,7 +14,8 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { items, increment, decrement } = useCart();
   const qty = items[product.id] || 0;
-  const priceDisplay = `$${(product.priceCents / 100).toFixed(2)}`;
+  const priceRaw = product.priceCents / 100;
+  const priceDisplay = `$${priceRaw % 1 === 0 ? priceRaw : priceRaw.toFixed(2)}`;
   const images = getProductImages(product.slug);
   // Only the cross-section image (index 2) needs custom positioning
   const positions = [undefined, undefined, getCrossSectionPosition(product.slug)];
@@ -48,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.proteinGrams}g Protein &middot; {product.calories} cal per slice
         </p>
         <p className="text-espresso/40 text-xs">
-          12 slices per loaf &middot; Free delivery
+          12 slices per loaf &middot; Ships in 3–5 business days
         </p>
 
         <div className="flex flex-wrap gap-1 mt-3">

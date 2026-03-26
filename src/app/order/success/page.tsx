@@ -90,7 +90,7 @@ export default async function OrderSuccessPage({ searchParams }: SuccessPageProp
 
         {meta?.delivery_date && (
           <p className="text-sm text-espresso/60 mb-2">
-            Delivery date: {meta.delivery_date}
+            Estimated delivery: {meta.delivery_date}
           </p>
         )}
 
