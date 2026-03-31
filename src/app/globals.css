@@ -12,6 +12,8 @@
   --color-golden: #E8B44C;
   --color-sage: #8FA882;
   --color-sage-light: #B5C9AB;
+  --color-label-blue: #2563EB;
+  --color-label-navy: #2D3562;
 
   /* ── Typography ─────────────────────────────────── */
   --font-display: var(--font-dm-serif), Georgia, serif;
