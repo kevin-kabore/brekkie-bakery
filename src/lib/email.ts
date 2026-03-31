@@ -90,7 +90,7 @@ export async function sendOrderNotification(data: OrderNotificationData) {
   `;
 
   await resend.emails.send({
-    from: "Brekkie Bakery Orders <onboarding@resend.dev>",
+    from: "Brekkie Bakery Orders <zack@brekkiebakery.com>",
     to: TEAM_EMAILS,
     subject: `New Order ${data.orderNumber} - ${totalLoaves} loaves, $${totalDollars}`,
     html,
