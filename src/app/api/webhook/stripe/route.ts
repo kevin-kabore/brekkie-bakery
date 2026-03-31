@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { createServerClient } from "@/lib/supabase";
 import type Stripe from "stripe";
+import { sendOrderNotification } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -103,6 +104,23 @@ async function handleCheckoutCompleted(
   if (insertErr) {
     console.error("Failed to insert order:", insertErr);
   }
+
+  // Send team email notification (fire-and-forget)
+  sendOrderNotification({
+    orderNumber: meta.order_number,
+    customerName: meta.customer_name,
+    customerEmail: session.customer_email ?? "",
+    customerPhone: meta.customer_phone,
+    deliveryAddress: meta.delivery_address ?? "",
+    deliveryDate: meta.delivery_date ?? "",
+    specialInstructions: meta.special_instructions || null,
+    items: orderItems.map((item) => ({
+      productName: item.productName,
+      quantity: item.quantity,
+      priceCents: item.priceCents,
+    })),
+    totalCents: session.amount_total ?? 0,
+  }).catch((err) => console.error("Failed to send team notification:", err));
 
   // Sync to Google Sheets (fire-and-forget)
   const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
