@@ -21,7 +21,7 @@ export function Products({ products }: ProductsProps) {
             Protein-packed banana bread, baked in small batches in NYC.
           </p>
           <p className="inline-flex items-center gap-1 bg-label-navy text-white font-semibold text-sm px-5 py-2.5 rounded-full">
-            <span className="font-bold text-base">144g</span> of protein in every loaf
+            <span className="font-bold text-base">12g</span> of protein in every slice
           </p>
         </div>
 

@@ -49,7 +49,7 @@ export function Hero() {
         </h1>
 
         {/* Accent text */}
-        <p className="font-accent text-golden text-3xl md:text-4xl drop-shadow-sm">
+        <p className="font-accent text-cream text-4xl md:text-5xl drop-shadow-md">
           Protein Banana Bread
         </p>
 
