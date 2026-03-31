@@ -12,9 +12,10 @@ interface AddressInputProps {
   value: AddressData;
   onChange: (address: AddressData) => void;
   prefix?: string;
+  autoFocus?: boolean;
 }
 
-export function AddressInput({ value, onChange, prefix = "" }: AddressInputProps) {
+export function AddressInput({ value, onChange, prefix = "", autoFocus }: AddressInputProps) {
   function update(field: keyof AddressData, v: string) {
     onChange({ ...value, [field]: v });
   }
@@ -29,6 +30,7 @@ export function AddressInput({ value, onChange, prefix = "" }: AddressInputProps
           label="Street Address"
           type="text"
           required
+          autoFocus={autoFocus}
           autoComplete={`${prefix}street-address`}
           value={value.street}
           onChange={(e) => update("street", e.target.value)}

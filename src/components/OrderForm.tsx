@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
@@ -115,6 +115,13 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [formError, setFormError] = useState("");
 
+  // Auto-scroll and focus when entering step 2
+  useEffect(() => {
+    if (step === 2) {
+      document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [step]);
+
   function updateDelivery<K extends keyof Omit<DeliveryFormData, "items">>(
     field: K,
     value: Omit<DeliveryFormData, "items">[K]
@@ -159,8 +166,6 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
       return;
     }
     setStep(2);
-    // Scroll form back into view
-    document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
   }
 
   // ── Submit ─────────────────────────────────────────
@@ -483,6 +488,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
                       value={deliveryData.address}
                       onChange={(addr) => updateDelivery("address", addr)}
                       prefix="shipping "
+                      autoFocus={true}
                     />
                     <Input
                       label="Preferred Delivery Date"
@@ -505,6 +511,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
                       value={wholesaleData.address}
                       onChange={(addr) => updateWholesale("address", addr)}
                       prefix="billing "
+                      autoFocus={true}
                     />
                     <Select
                       label="Order Frequency"
