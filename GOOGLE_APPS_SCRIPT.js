@@ -90,7 +90,7 @@ function doPost(e) {
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = getOrCreateWeeklySheet(ss);
 
-    if (data.formType === "preorder") {
+    if (data.formType === "preorder" || data.formType === "order") {
       writePreorder(sheet, data);
     } else if (data.formType === "wholesale") {
       writeWholesale(sheet, data);
