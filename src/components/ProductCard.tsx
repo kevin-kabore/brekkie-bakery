@@ -12,7 +12,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { items, increment, decrement } = useCart();
+  const { items, increment, decrement, mode } = useCart();
+  const isWholesale = mode === "wholesale";
   const qty = items[product.id] || 0;
   const priceRaw = product.priceCents / 100;
   const priceDisplay = `$${priceRaw % 1 === 0 ? priceRaw : priceRaw.toFixed(2)}`;
@@ -53,9 +54,11 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="flex flex-col flex-1 p-6">
         <div className="flex items-start justify-between gap-3 mb-1">
           <h3 className="font-display text-xl text-espresso leading-tight">{product.name}</h3>
-          <span className="shrink-0 text-crust font-bold text-lg">
-            {priceDisplay}
-          </span>
+          {!isWholesale && (
+            <span className="shrink-0 text-crust font-bold text-lg">
+              {priceDisplay}
+            </span>
+          )}
         </div>
 
         <p className="text-espresso/55 text-sm leading-relaxed mt-1">
@@ -87,7 +90,7 @@ export function ProductCard({ product }: ProductCardProps) {
               className="w-full bg-crust hover:bg-crust-light text-cream font-semibold py-3 rounded-full transition-all cursor-pointer text-sm flex items-center justify-center gap-2"
             >
               <ShoppingBag size={16} />
-              Add to Cart
+              {isWholesale ? "Add to Inquiry" : "Add to Cart"}
             </button>
           ) : (
             <div className="flex justify-center">
