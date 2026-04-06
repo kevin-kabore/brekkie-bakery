@@ -4,7 +4,7 @@ import { OrderForm } from "@/components/OrderForm";
 import type { Settings } from "@/types";
 
 interface OrderSectionProps {
-  products: unknown;
+  products: unknown; // kept for page.tsx compat — unused, cart comes from context
   settings: Settings;
 }
 
