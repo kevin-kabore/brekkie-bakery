@@ -1,7 +1,8 @@
 "use client";
 
 import { ProductCard } from "@/components/ProductCard";
-import { Snowflake, Refrigerator, Timer } from "lucide-react";
+import { Snowflake, Refrigerator, Timer, Info } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 import type { Product } from "@/types";
 
 interface ProductsProps {
@@ -9,6 +10,9 @@ interface ProductsProps {
 }
 
 export function Products({ products }: ProductsProps) {
+  const { mode, setMode } = useCart();
+  const isWholesale = mode === "wholesale";
+
   return (
     <section id="products" className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
@@ -62,6 +66,45 @@ export function Products({ products }: ProductsProps) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Mode toggle — Preorder / Wholesale */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="inline-flex bg-stone/50 rounded-lg p-1">
+            <button
+              type="button"
+              onClick={() => setMode("preorder")}
+              className={
+                mode === "preorder"
+                  ? "bg-espresso text-cream rounded-lg px-6 py-3 font-semibold cursor-pointer transition-colors"
+                  : "text-espresso/60 hover:text-espresso px-6 py-3 cursor-pointer transition-colors"
+              }
+            >
+              Preorder
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("wholesale")}
+              className={
+                mode === "wholesale"
+                  ? "bg-espresso text-cream rounded-lg px-6 py-3 font-semibold cursor-pointer transition-colors"
+                  : "text-espresso/60 hover:text-espresso px-6 py-3 cursor-pointer transition-colors"
+              }
+            >
+              Wholesale
+            </button>
+          </div>
+
+          {/* Wholesale info banner */}
+          {isWholesale && (
+            <div className="mt-4 max-w-2xl w-full rounded-xl bg-stone/30 border border-stone/60 px-5 py-4 flex items-start gap-3">
+              <Info className="w-4 h-4 text-espresso/50 shrink-0 mt-0.5" />
+              <p className="text-sm text-espresso/60">
+                Wholesale pricing available upon request. Select items you&apos;re interested in
+                and a team member will reach out within 1–2 business days.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
