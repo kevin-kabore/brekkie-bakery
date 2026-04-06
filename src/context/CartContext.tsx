@@ -58,7 +58,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return { ...state, items: rest };
     }
     case "CLEAR":
-      return initialState;
+      return { ...initialState, mode: state.mode };
     case "SET_MODE":
       return { ...state, mode: action.mode };
     default:
@@ -94,7 +94,7 @@ export function CartProvider({
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
   useEffect(() => {
-    if (window.location.hash === "#wholesale") {
+    if (typeof window !== "undefined" && window.location.hash === "#wholesale") {
       dispatch({ type: "SET_MODE", mode: "wholesale" });
     }
   }, []);
