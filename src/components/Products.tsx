@@ -70,9 +70,10 @@ export function Products({ products }: ProductsProps) {
 
         {/* Mode toggle — Preorder / Wholesale */}
         <div className="flex flex-col items-center mb-8">
-          <div className="inline-flex bg-stone/50 rounded-lg p-1">
+          <div role="group" aria-label="Order mode" className="inline-flex bg-stone/50 rounded-lg p-1">
             <button
               type="button"
+              aria-pressed={mode === "preorder"}
               onClick={() => setMode("preorder")}
               className={
                 mode === "preorder"
@@ -84,6 +85,7 @@ export function Products({ products }: ProductsProps) {
             </button>
             <button
               type="button"
+              aria-pressed={mode === "wholesale"}
               onClick={() => setMode("wholesale")}
               className={
                 mode === "wholesale"
@@ -96,6 +98,7 @@ export function Products({ products }: ProductsProps) {
           </div>
 
           {/* Wholesale info banner */}
+          <div aria-live="polite">
           {isWholesale && (
             <div className="mt-4 max-w-2xl w-full rounded-xl bg-stone/30 border border-stone/60 px-5 py-4 flex items-start gap-3">
               <Info className="w-4 h-4 text-espresso/50 shrink-0 mt-0.5" />
@@ -105,6 +108,7 @@ export function Products({ products }: ProductsProps) {
               </p>
             </div>
           )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
