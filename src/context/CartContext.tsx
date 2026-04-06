@@ -5,6 +5,7 @@ import {
   useContext,
   useReducer,
   useMemo,
+  useEffect,
   type ReactNode,
 } from "react";
 import type { Product } from "@/types";
@@ -12,9 +13,10 @@ import type { Product } from "@/types";
 // ── State ──────────────────────────────────────────────
 interface CartState {
   items: Record<string, number>; // productId → qty
+  mode: "preorder" | "wholesale";
 }
 
-const initialState: CartState = { items: {} };
+const initialState: CartState = { items: {}, mode: "preorder" };
 
 // ── Actions ────────────────────────────────────────────
 type CartAction =
@@ -22,7 +24,8 @@ type CartAction =
   | { type: "INCREMENT"; productId: string }
   | { type: "DECREMENT"; productId: string }
   | { type: "REMOVE"; productId: string }
-  | { type: "CLEAR" };
+  | { type: "CLEAR" }
+  | { type: "SET_MODE"; mode: "preorder" | "wholesale" };
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
@@ -30,12 +33,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       const qty = Math.max(0, action.qty);
       if (qty === 0) {
         const { [action.productId]: _, ...rest } = state.items;
-        return { items: rest };
+        return { ...state, items: rest };
       }
-      return { items: { ...state.items, [action.productId]: qty } };
+      return { ...state, items: { ...state.items, [action.productId]: qty } };
     }
     case "INCREMENT":
       return {
+        ...state,
         items: {
           ...state.items,
           [action.productId]: (state.items[action.productId] || 0) + 1,
@@ -45,16 +49,18 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       const current = state.items[action.productId] || 0;
       if (current <= 1) {
         const { [action.productId]: _, ...rest } = state.items;
-        return { items: rest };
+        return { ...state, items: rest };
       }
-      return { items: { ...state.items, [action.productId]: current - 1 } };
+      return { ...state, items: { ...state.items, [action.productId]: current - 1 } };
     }
     case "REMOVE": {
       const { [action.productId]: _, ...rest } = state.items;
-      return { items: rest };
+      return { ...state, items: rest };
     }
     case "CLEAR":
       return initialState;
+    case "SET_MODE":
+      return { ...state, mode: action.mode };
     default:
       return state;
   }
@@ -66,11 +72,13 @@ interface CartContextValue {
   products: Product[];
   totalQuantity: number;
   totalCents: number;
+  mode: "preorder" | "wholesale";
   increment: (productId: string) => void;
   decrement: (productId: string) => void;
   setQuantity: (productId: string, qty: number) => void;
   remove: (productId: string) => void;
   clear: () => void;
+  setMode: (mode: "preorder" | "wholesale") => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -84,6 +92,12 @@ export function CartProvider({
   children: ReactNode;
 }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  useEffect(() => {
+    if (window.location.hash === "#wholesale") {
+      dispatch({ type: "SET_MODE", mode: "wholesale" });
+    }
+  }, []);
 
   const value = useMemo<CartContextValue>(() => {
     const totalQuantity = Object.values(state.items).reduce(
@@ -100,14 +114,16 @@ export function CartProvider({
       products,
       totalQuantity,
       totalCents,
+      mode: state.mode,
       increment: (id) => dispatch({ type: "INCREMENT", productId: id }),
       decrement: (id) => dispatch({ type: "DECREMENT", productId: id }),
       setQuantity: (id, qty) =>
         dispatch({ type: "SET_QUANTITY", productId: id, qty }),
       remove: (id) => dispatch({ type: "REMOVE", productId: id }),
       clear: () => dispatch({ type: "CLEAR" }),
+      setMode: (mode) => dispatch({ type: "SET_MODE", mode }),
     };
-  }, [state.items, products]);
+  }, [state.items, state.mode, products]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
