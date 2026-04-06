@@ -4,11 +4,12 @@ import { useCart } from "@/context/CartContext";
 import { ShoppingBag } from "lucide-react";
 
 export function CartBar() {
-  const { totalQuantity, totalCents } = useCart();
+  const { totalQuantity, totalCents, mode } = useCart();
 
   if (totalQuantity === 0) return null;
 
   const label = totalQuantity === 1 ? "loaf" : "loaves";
+  const isWholesale = mode === "wholesale";
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 flex justify-center pointer-events-none animate-in slide-in-from-bottom">
@@ -17,14 +18,16 @@ export function CartBar() {
           <ShoppingBag size={16} />
           {totalQuantity} {label}
         </span>
-        <span className="font-semibold">
-          ${(totalCents / 100).toFixed(2)}
-        </span>
+        {!isWholesale && (
+          <span className="font-semibold">
+            ${(totalCents / 100).toFixed(2)}
+          </span>
+        )}
         <a
           href="#order"
           className="bg-crust hover:bg-crust-light text-cream font-semibold px-6 py-2 rounded-full text-sm transition-colors"
         >
-          Checkout
+          {isWholesale ? "Submit Inquiry" : "Checkout"}
         </a>
       </div>
     </div>
