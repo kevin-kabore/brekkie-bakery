@@ -1,26 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { OrderForm, type TabType } from "@/components/OrderForm";
+import { OrderForm } from "@/components/OrderForm";
 import type { Settings } from "@/types";
 
 interface OrderSectionProps {
-  products: unknown; // kept for page.tsx compat — unused, cart comes from context
+  products: unknown;
   settings: Settings;
 }
 
 export function OrderSection({ settings }: OrderSectionProps) {
-  const [defaultTab, setDefaultTab] = useState<TabType>("order");
-
-  useEffect(() => {
-    if (window.location.hash === "#wholesale") {
-      setDefaultTab("wholesale");
-      setTimeout(() => {
-        document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    }
-  }, []);
-
   return (
     <section id="order" className="py-24 px-6 bg-cream">
       <div className="max-w-6xl mx-auto">
@@ -30,10 +18,7 @@ export function OrderSection({ settings }: OrderSectionProps) {
         <p className="text-center text-espresso/60 mb-12">
           Order for shipping or inquire about wholesale for your business.
         </p>
-        <OrderForm
-          defaultTab={defaultTab}
-          settings={settings}
-        />
+        <OrderForm settings={settings} />
       </div>
     </section>
   );

@@ -4,14 +4,13 @@ import { useCart } from "@/context/CartContext";
 import { QuantityStepper } from "@/components/QuantityStepper";
 
 interface CartSummaryProps {
-  /** Hide prices (wholesale tab) */
-  hidePrices?: boolean;
   maxQty?: number;
 }
 
-export function CartSummary({ hidePrices = false, maxQty = 20 }: CartSummaryProps) {
-  const { items, products, totalQuantity, totalCents, increment, decrement } =
+export function CartSummary({ maxQty = 20 }: CartSummaryProps) {
+  const { items, products, totalQuantity, totalCents, increment, decrement, mode } =
     useCart();
+  const hidePrices = mode === "wholesale";
 
   const cartProducts = products.filter((p) => (items[p.id] || 0) > 0);
 

@@ -10,8 +10,6 @@ import { CartSummary } from "@/components/CartSummary";
 import { useCart } from "@/context/CartContext";
 import { BUSINESS_TYPES, FREQUENCIES } from "@/lib/constants";
 import type { AddressData, DeliveryFormData, Settings, WholesaleFormData } from "@/types";
-
-export type TabType = "order" | "wholesale";
 type SubmitState = "idle" | "submitting" | "success" | "error";
 
 function getDatePlusDays(days: number): string {
@@ -85,14 +83,12 @@ function StepIndicator({ step, labels }: { step: number; labels: [string, string
 
 // ── Main component ─────────────────────────────────────
 interface OrderFormProps {
-  defaultTab?: TabType;
   settings: Settings;
 }
 
-export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
-  const { items, totalQuantity, totalCents, clear } = useCart();
+export function OrderForm({ settings }: OrderFormProps) {
+  const { items, totalQuantity, totalCents, clear, mode } = useCart();
 
-  const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
   const [step, setStep] = useState(1);
   const [deliveryData, setDeliveryData] = useState<Omit<DeliveryFormData, "items">>({
     name: "",
@@ -139,7 +135,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
   // ── Step 1 validation ──────────────────────────────
   function canContinue(): boolean {
     if (totalQuantity === 0) return false;
-    if (activeTab === "order") {
+    if (mode === "preorder") {
       return !!(deliveryData.name && deliveryData.email && deliveryData.phone);
     }
     return !!(
@@ -157,7 +153,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
       setFormError("Please add items to your cart first.");
       return;
     }
-    if (activeTab === "wholesale" && totalQuantity < 5) {
+    if (mode === "wholesale" && totalQuantity < 5) {
       setFormError("Wholesale orders require a minimum of 5 loaves.");
       return;
     }
@@ -173,7 +169,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
     e.preventDefault();
     setFormError("");
 
-    if (activeTab === "order" && !settings.preordersOpen) {
+    if (mode === "preorder" && !settings.preordersOpen) {
       setFormError("Orders are currently closed. Check back soon!");
       return;
     }
@@ -181,7 +177,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
     setSubmitState("submitting");
 
     try {
-      if (activeTab === "order") {
+      if (mode === "preorder") {
         const payload = {
           name: deliveryData.name,
           email: deliveryData.email,
@@ -258,7 +254,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
         <div className="bg-green-50 rounded-xl p-8 text-center">
           <div className="text-4xl mb-4">&#10003;</div>
           <p className="text-green-800 font-semibold text-lg">
-            {activeTab === "wholesale"
+            {mode === "wholesale"
               ? "Inquiry received! We'll be in touch shortly."
               : "Order received! We'll be in touch shortly."}
           </p>
@@ -289,8 +285,8 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
     );
   }
 
-  const ordersClosed = !settings.preordersOpen && activeTab === "order";
-  const isWholesale = activeTab === "wholesale";
+  const ordersClosed = !settings.preordersOpen && mode === "preorder";
+  const isWholesale = mode === "wholesale";
 
   const stepLabels: [string, string] = isWholesale
     ? ["Business Info", "Delivery Details"]
@@ -298,40 +294,6 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Tabs — pill/segment control */}
-      <div className="inline-flex bg-stone/50 rounded-lg p-1 mb-6">
-        <button
-          type="button"
-          onClick={() => {
-            setActiveTab("order");
-            setStep(1);
-            setFormError("");
-          }}
-          className={
-            activeTab === "order"
-              ? "bg-espresso text-cream rounded-lg px-6 py-3 font-semibold cursor-pointer"
-              : "text-espresso/60 hover:text-espresso px-6 py-3 cursor-pointer"
-          }
-        >
-          Order
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setActiveTab("wholesale");
-            setStep(1);
-            setFormError("");
-          }}
-          className={
-            activeTab === "wholesale"
-              ? "bg-espresso text-cream rounded-lg px-6 py-3 font-semibold cursor-pointer"
-              : "text-espresso/60 hover:text-espresso px-6 py-3 cursor-pointer"
-          }
-        >
-          Wholesale
-        </button>
-      </div>
-
       {/* Form card */}
       <div className="bg-white rounded-2xl shadow-sm border border-stone/60 p-6 md:p-8">
         {ordersClosed ? (
@@ -348,7 +310,6 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
             {step === 1 && (
               <div className="flex flex-col gap-5">
                 <CartSummary
-                  hidePrices={isWholesale}
                   maxQty={isWholesale ? 100 : 20}
                 />
 
@@ -358,7 +319,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
                   </p>
                 )}
 
-                {activeTab === "order" ? (
+                {mode === "preorder" ? (
                   <>
                     <div className="border-t border-espresso/10 pt-5">
                       <h3 className="font-display text-base text-espresso mb-4">Contact Information</h3>
@@ -482,7 +443,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
 
                 <h3 className="font-display text-base text-espresso">Delivery Details</h3>
 
-                {activeTab === "order" ? (
+                {mode === "preorder" ? (
                   <div className="flex flex-col gap-4">
                     <AddressInput
                       value={deliveryData.address}
@@ -548,7 +509,7 @@ export function OrderForm({ defaultTab = "order", settings }: OrderFormProps) {
                   >
                     {submitState === "submitting"
                       ? "Processing..."
-                      : activeTab === "order"
+                      : mode === "preorder"
                         ? `Checkout — $${(totalCents / 100).toFixed(2)} + $7.99 shipping`
                         : "Submit Inquiry"}
                   </Button>
