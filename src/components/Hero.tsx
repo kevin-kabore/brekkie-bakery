@@ -72,7 +72,7 @@ export function Hero() {
 
         {/* CTA button */}
         <a
-          href="#order"
+          href="#order-mode"
           className="group mt-2 inline-flex items-center gap-2 bg-crust hover:bg-crust-light text-cream rounded-full px-8 py-4 text-lg font-semibold transition-colors duration-200 shadow-lg"
         >
           Order Now

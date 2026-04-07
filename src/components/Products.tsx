@@ -69,7 +69,7 @@ export function Products({ products }: ProductsProps) {
         </div>
 
         {/* Mode toggle — Preorder / Wholesale */}
-        <div className="flex flex-col items-center mb-8">
+        <div id="order-mode" className="scroll-mt-24 flex flex-col items-center mb-8">
           <div role="group" aria-label="Order mode" className="inline-flex bg-stone/50 rounded-lg p-1">
             <button
               type="button"
